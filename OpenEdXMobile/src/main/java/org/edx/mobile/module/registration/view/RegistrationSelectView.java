@@ -1,6 +1,7 @@
 package org.edx.mobile.module.registration.view;
 
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -58,6 +59,10 @@ class RegistrationSelectView implements IRegistrationFieldView {
 
         // This tag is necessary for End-to-End tests to work properly
         mInputView.setTag(mField.getName());
+
+        // Do a11y adjustment
+        ViewCompat.setImportantForAccessibility(mInstructionsView, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        ViewCompat.setImportantForAccessibility(mErrorView, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.edx.mobile.module.registration.view;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.ViewCompat;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -62,6 +63,12 @@ class RegistrationEditTextView implements IRegistrationFieldView {
 
         // This tag is necessary for End-to-End tests to work properly
         mTextInputLayout.setTag(mField.getName());
+
+        // Do a11y adjustment
+        mTextInputLayout.setContentDescription(String.format("%s. %s.", mField.getLabel(), field.getInstructions()));
+        mTextInputEditText.setContentDescription(mField.getLabel());
+        ViewCompat.setImportantForAccessibility(mInstructionsTextView, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        ViewCompat.setImportantForAccessibility(mErrorTextView, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     public boolean setRawValue(String value){
@@ -108,6 +115,8 @@ class RegistrationEditTextView implements IRegistrationFieldView {
             Spanned result = Html.fromHtml(error);
             mErrorTextView.setText(result);
             mErrorTextView.setVisibility(View.VISIBLE);
+            // Add error message in a11y content for mTextInputLayout
+            mTextInputLayout.setContentDescription(String.format("%s. %s. %s.", mField.getLabel(), mField.getInstructions(), error));
         }
         else {
             logger.warn("error message not provided, so not informing the user about this error");
@@ -118,6 +127,9 @@ class RegistrationEditTextView implements IRegistrationFieldView {
     public boolean isValidInput() {
         // hide error as we are re-validating the input
         mErrorTextView.setVisibility(View.GONE);
+
+        // Update a11y content for mTextInputLayout
+        mTextInputLayout.setContentDescription(String.format("%s. %s.", mField.getLabel(), mField.getInstructions()));
 
         // check if this is required field and has an input value
         if (mField.isRequired() && !hasValue()) {
