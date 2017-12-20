@@ -17,7 +17,9 @@ import javax.inject.Inject;
  */
 public class CourseOutlineActivity extends CourseVideoListActivity {
 
-    private CourseOutlineFragment fragment;
+//    private CourseOutlineFragment fragment;
+    private CourseOutlineFragmentPhilU fragment;
+
     private boolean isVideoMode = false;
     private boolean isOnCourseOutline = false;
 
@@ -47,8 +49,17 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
         if (isOnCourseOutline) {
             setTitle(courseData.getCourse().getName());
             if (!isVideoMode) {
-                lastAccessManager.fetchLastAccessed(this, courseData.getCourse().getId());
+//                lastAccessManager.fetchLastAccessed(this, courseData.getCourse().getId());
+                if(fragment != null) {
+
+                    fragment.getAndSetLastAccessed();
+                }
             }
+//            if(fragment != null)
+//            {
+//                fragment.getAndSetLastAccessed();
+//            }
+
         }
     }
 
@@ -59,7 +70,9 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
         setTitle(courseComponent.getDisplayName());
 
         if (fragment == null) {
-            fragment = new CourseOutlineFragment();
+//            fragment = new CourseOutlineFragment();
+            fragment = new CourseOutlineFragmentPhilU();
+
             fragment.setTaskProcessCallback(this);
 
             Bundle bundle = new Bundle();
@@ -82,7 +95,11 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
 
         if (isOnCourseOutline) {
             if (!isVideoMode) {
-                lastAccessManager.fetchLastAccessed(this, courseData.getCourse().getId());
+//                lastAccessManager.fetchLastAccessed(this, courseData.getCourse().getId());
+                if(fragment!=null)
+                {
+                    fragment.getAndSetLastAccessed();
+                }
             }
         } else {
             environment.getAnalyticsRegistry().trackScreenView(
@@ -97,8 +114,11 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState != null){
-             fragment = (CourseOutlineFragment)
-                 getSupportFragmentManager().findFragmentByTag(CourseOutlineFragment.TAG);
+//             fragment = (CourseOutlineFragment)
+//                 getSupportFragmentManager().findFragmentByTag(CourseOutlineFragment.TAG);
+            fragment = (CourseOutlineFragmentPhilU)
+                    getSupportFragmentManager().findFragmentByTag(CourseOutlineFragmentPhilU.TAG);
+
         }
     }
 

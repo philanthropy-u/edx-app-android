@@ -70,7 +70,7 @@
             android:name="org.edx.mobile.view.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"
+            android:windowSoftInputMode="adjustResize"
             android:fitsSystemWindows="true"
             android:theme="@style/AppTheme.TransparentStatusBar" />
 
