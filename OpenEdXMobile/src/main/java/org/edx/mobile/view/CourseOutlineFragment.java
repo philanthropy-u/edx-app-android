@@ -49,12 +49,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
-/**
- * Created by arslan on 12/14/17.
- */
-
-
-
 public class CourseOutlineFragment extends BaseFragment implements LastAccessManager.LastAccessManagerCallback{
 
     protected final Logger logger = new Logger(getClass().getName());

@@ -47,12 +47,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
-
-/**
- * Created by arslan on 12/14/17.
- */
-
-
 /**
  * Used for pinned behavior.
  */
@@ -263,7 +257,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
         if(lastAccessedPosition !=-1 && position < lastAccessedPosition)
         {
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.philu_primary));
             viewHolder.timelineViewMarker.setMarkerSize(25);
         }
         //This block is used to handle timeline marker and row title text color if current item is last accessed
@@ -271,7 +265,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         if(lastAccessedId!= null && !lastAccessedId.isEmpty() && lastAccessedId.equals(currentCourseComponent.getId()))
         {
             viewHolder.timelineViewMarker.setMarkerSize(40);
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.philu_primary));
             viewHolder.subSectionTitleTV.setTypeface(null , Typeface.BOLD);
             hasLastAccessedShown = true;
             lastAccessedPosition = position;
@@ -280,7 +274,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
         else if(!hasLastAccessedShown)
         {
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.philu_primary));
             viewHolder.timelineViewMarker.setMarkerSize(25);
         }
 
@@ -294,7 +288,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         if(selectedItemPositions.contains(position))
         {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.white));
-            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.philu_primary));
         }
 
         final int totalDownloadableVideos = currentCourseComponent.getDownloadableVideosCount();
@@ -341,9 +335,9 @@ public class CourseOutlineAdapter extends BaseAdapter {
         if(selectedItemPositions.contains(position))
         {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.white));
-            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.philu_primary));
         }else{
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.philu_primary));
         }
 
         //TODO decide which type of block(text,audio,video) it is & set icon accordingly.
