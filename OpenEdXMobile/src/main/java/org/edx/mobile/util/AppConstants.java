@@ -33,4 +33,6 @@ public enum AppConstants {
          */
         public static final String SUBTITLES = "subtitles";
     }
+
+    public static final String DOWNLOADED_VIDEOS_ROW_ICON_TAG = "downloaded";
 }

@@ -17,8 +17,7 @@ import javax.inject.Inject;
  */
 public class CourseOutlineActivity extends CourseVideoListActivity {
 
-//    private CourseOutlineFragment fragment;
-    private CourseOutlineFragmentPhilU fragment;
+    private CourseOutlineFragment fragment;
 
     private boolean isVideoMode = false;
     private boolean isOnCourseOutline = false;
@@ -55,10 +54,6 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
                     fragment.getAndSetLastAccessed();
                 }
             }
-//            if(fragment != null)
-//            {
-//                fragment.getAndSetLastAccessed();
-//            }
 
         }
     }
@@ -70,8 +65,7 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
         setTitle(courseComponent.getDisplayName());
 
         if (fragment == null) {
-//            fragment = new CourseOutlineFragment();
-            fragment = new CourseOutlineFragmentPhilU();
+            fragment = new CourseOutlineFragment();
 
             fragment.setTaskProcessCallback(this);
 
@@ -114,10 +108,8 @@ public class CourseOutlineActivity extends CourseVideoListActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (savedInstanceState != null){
-//             fragment = (CourseOutlineFragment)
-//                 getSupportFragmentManager().findFragmentByTag(CourseOutlineFragment.TAG);
-            fragment = (CourseOutlineFragmentPhilU)
-                    getSupportFragmentManager().findFragmentByTag(CourseOutlineFragmentPhilU.TAG);
+            fragment = (CourseOutlineFragment)
+                    getSupportFragmentManager().findFragmentByTag(CourseOutlineFragment.TAG);
 
         }
     }

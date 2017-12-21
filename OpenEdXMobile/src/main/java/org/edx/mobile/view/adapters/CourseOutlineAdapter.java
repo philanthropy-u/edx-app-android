@@ -2,21 +2,22 @@ package org.edx.mobile.view.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.text.TextUtils;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.vipulasri.timelineview.LineType;
+import com.github.vipulasri.timelineview.TimelineView;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.joanzapata.iconify.internal.Animation;
-import com.joanzapata.iconify.widget.IconImageView;
 
 import org.edx.mobile.R;
 import org.edx.mobile.logger.Logger;
@@ -25,23 +26,32 @@ import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.DiscussionBlockModel;
 import org.edx.mobile.model.course.HasDownloadEntry;
+import org.edx.mobile.model.course.HtmlBlockModel;
 import org.edx.mobile.model.course.IBlock;
 import org.edx.mobile.model.course.VideoBlockModel;
 import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.module.db.DataCallback;
 import org.edx.mobile.module.db.IDatabase;
 import org.edx.mobile.module.storage.IStorage;
+import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.util.DateUtil;
 import org.edx.mobile.util.MemoryUtil;
 import org.edx.mobile.util.ResourceUtil;
 import org.edx.mobile.util.TimeZoneUtils;
+import org.edx.mobile.view.custom.IconImageViewXml;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
+
+/**
+ * Created by arslan on 12/14/17.
+ */
+
 
 /**
  * Used for pinned behavior.
@@ -68,9 +78,13 @@ public class CourseOutlineAdapter extends BaseAdapter {
     private DownloadListener mDownloadListener;
     private Config config;
     private boolean isVideoMode;
+    public String lastAccessedId = "";
+    private boolean hasLastAccessedShown = false;
+    private int lastAccessedPosition = -1;
+    public HashSet<Integer> selectedItemPositions ;
 
     public CourseOutlineAdapter(Context context, Config config, IDatabase dbStore, IStorage storage,
-                                DownloadListener listener, boolean isVideoMode) {
+                                DownloadListener listener, boolean isVideoMode, String lastAccessComponentId) {
         this.context = context;
         this.config = config;
         this.dbStore = dbStore;
@@ -79,6 +93,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         this.isVideoMode = isVideoMode;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = new ArrayList();
+        lastAccessedId = lastAccessComponentId;
+        selectedItemPositions = new HashSet<>();
     }
 
     @Override
@@ -127,14 +143,14 @@ public class CourseOutlineAdapter extends BaseAdapter {
         //if (convertView == null) {
         switch (type) {
             case SectionRow.ITEM: {
-                convertView = mInflater.inflate(R.layout.row_course_outline_list, parent, false);
+                convertView = mInflater.inflate(R.layout.subsection_row_layout, parent, false);
                 // apply a tag to this list row
                 ViewHolder tag = getTag(convertView);
                 convertView.setTag(tag);
                 break;
             }
             case SectionRow.SECTION: {
-                convertView = mInflater.inflate(R.layout.row_section_header, parent, false);
+                convertView = mInflater.inflate(R.layout.section_row, parent, false);
                 break;
             }
             default: {
@@ -196,75 +212,215 @@ public class CourseOutlineAdapter extends BaseAdapter {
             setData(this.rootComponent);
     }
 
+
     public View getRowView(int position, View convertView) {
+        Log.d("POSITION" , position+"");
         final SectionRow row = this.getItem(position);
-        final SectionRow nextRow = this.getItem(position + 1);
-        final CourseComponent component = row.component;
+        final CourseComponent currentCourseComponent = row.component;
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+        viewHolder.subSectionTitleTV.setText(currentCourseComponent.getDisplayName());
 
-        if (nextRow == null) {
-            viewHolder.halfSeparator.setVisibility(View.GONE);
-            viewHolder.wholeSeparator.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.wholeSeparator.setVisibility(View.GONE);
-            boolean isLastChildInBlock = !row.component.getParent().getId().equals(nextRow.component.getParent().getId());
-            if (isLastChildInBlock) {
-                viewHolder.halfSeparator.setVisibility(View.GONE);
-            } else {
-                viewHolder.halfSeparator.setVisibility(View.VISIBLE);
-            }
+        if(!currentCourseComponent.isContainer())
+        {
+            //getting view for a block
+            getRowViewForLeaf(viewHolder , row, position);
+
+        }
+        else{
+            //getting view for subsection
+            getRowViewForContainer(viewHolder, row, position);
         }
 
-        viewHolder.rowType.setVisibility(View.GONE);
-        viewHolder.rowSubtitleIcon.setVisibility(View.GONE);
-        viewHolder.rowSubtitle.setVisibility(View.GONE);
-        viewHolder.rowSubtitleDueDate.setVisibility(View.GONE);
-        viewHolder.rowSubtitlePanel.setVisibility(View.GONE);
-        viewHolder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
-
-        if (component.isContainer()) {
-            getRowViewForContainer(viewHolder, row);
-        } else {
-            getRowViewForLeaf(viewHolder, row);
-        }
         return convertView;
     }
 
-    private void getRowViewForLeaf(ViewHolder viewHolder,
-                                   final SectionRow row) {
-        final CourseComponent unit = row.component;
-        viewHolder.rowType.setVisibility(View.VISIBLE);
-        viewHolder.rowSubtitleIcon.setVisibility(View.GONE);
-        viewHolder.rowSubtitleDueDate.setVisibility(View.GONE);
-        viewHolder.rowSubtitle.setVisibility(View.GONE);
-        viewHolder.rowSubtitlePanel.setVisibility(View.GONE);
-        viewHolder.bulkDownload.setVisibility(View.INVISIBLE);
-        viewHolder.rowTitle.setText(unit.getDisplayName());
+    //This function will provide row for the container/subsection
+    private void getRowViewForContainer(ViewHolder viewHolder, final SectionRow row, int position) {
+        final CourseComponent currentCourseComponent = row.component;
+        String courseId = currentCourseComponent.getCourseId();
+        BlockPath path = currentCourseComponent.getPath();
+        //FIXME - we should add a new column in database - pathinfo.
+        //then do the string match to get the record
+        String chapterId = path.get(1) == null ? "" : path.get(1).getDisplayName();
+        String sequentialId = path.get(2) == null ? "" : path.get(2).getDisplayName();
 
+        viewHolder.blockTypeIcon.setVisibility(View.GONE);
+        List<IBlock> blocks = currentCourseComponent.getChildren();
+        viewHolder.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_download);
+
+        //This block will check and set Sub topics
+        if(blocks != null && blocks.size() > 0) {
+            viewHolder.subSectionTitleTV.setText(blocks.get(0).getDisplayName());
+            if (blocks.size() == 1) {
+                viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
+                viewHolder.multipleItemsCV.setVisibility(View.GONE);
+            } else {
+                viewHolder.subSectionDescriptionTV.setText("+" + (blocks.size() - 1) + context.getString(R.string.sub_topics_text));
+                viewHolder.multipleItemsCV.setVisibility(View.VISIBLE);
+            }
+        }
+
+        //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
+        if(lastAccessedPosition !=-1 && position < lastAccessedPosition)
+        {
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.timelineViewMarker.setMarkerSize(25);
+        }
+        //This block is used to handle timeline marker and row title text color if current item is last accessed
+
+        if(lastAccessedId!= null && !lastAccessedId.isEmpty() && lastAccessedId.equals(currentCourseComponent.getId()))
+        {
+            viewHolder.timelineViewMarker.setMarkerSize(40);
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.subSectionTitleTV.setTypeface(null , Typeface.BOLD);
+            hasLastAccessedShown = true;
+            lastAccessedPosition = position;
+        }
+        //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
+
+        else if(!hasLastAccessedShown)
+        {
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+            viewHolder.timelineViewMarker.setMarkerSize(25);
+        }
+
+        viewHolder.timelineViewMarker.setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
+
+        //Manage if the line should follow towards next row or not (NO for the last row) on base of obtained marker type
+        int markerType = getTypeForTimelineMarker(position);
+        viewHolder.timelineViewMarker.initLine(markerType);
+
+        // This check will check if item is selected through long item click on list and mark view changes
+        if(selectedItemPositions.contains(position))
+        {
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.white));
+            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.dark_blue));
+        }
+
+        final int totalDownloadableVideos = currentCourseComponent.getDownloadableVideosCount();
+        // support video download for video type excluding the ones only viewable on web
+        if (totalDownloadableVideos == 0) {
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.GONE);
+        } else {
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.VISIBLE);
+
+            Integer downloadedCount = dbStore.getDownloadedVideosCountForSection(courseId,
+                    chapterId, sequentialId, null);
+
+            if (downloadedCount == totalDownloadableVideos) {
+                viewHolder.courseAvailabilityStatusIcon.setVisibility(View.VISIBLE);
+                //                holder.noOfVideos.setVisibility(View.VISIBLE);
+                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADED, null);
+            } else if (dbStore.getDownloadingVideosCountForSection(courseId, chapterId,
+                    sequentialId, null) + downloadedCount == totalDownloadableVideos) {
+                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADING,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View downloadView) {
+                                mDownloadListener.viewDownloadsStatus();
+                            }
+                        });
+            } else {
+                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.ONLINE,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View downloadView) {
+                                mDownloadListener.download(currentCourseComponent.getVideos());
+                            }
+                        });
+            }
+        }
+    }
+    private void getRowViewForLeaf(ViewHolder viewHolder,
+                                   final SectionRow row, int position) {
+        final CourseComponent currentCourseComponent = row.component;
+
+        viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
+        viewHolder.timelineViewMarker.setVisibility(View.GONE);
+        viewHolder.blockTypeIcon.setVisibility(View.VISIBLE);
+        if(selectedItemPositions.contains(position))
+        {
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.white));
+            viewHolder.rowCardview.setCardBackgroundColor(ContextCompat.getColor(context , R.color.dark_blue));
+        }else{
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context , R.color.dark_blue));
+        }
+
+        //TODO decide which type of block(text,audio,video) it is & set icon accordingly.
         if (row.component instanceof VideoBlockModel) {
+            viewHolder.blockTypeIcon.setIcon(FontAwesomeIcons.fa_film);
+
             final DownloadEntry videoData = ((VideoBlockModel) row.component).getDownloadEntry(storage);
             if (null != videoData) {
                 updateUIForVideo(viewHolder, videoData);
                 return;
             }
         }
-        if (config.isDiscussionsEnabled() && row.component instanceof DiscussionBlockModel) {
-            viewHolder.rowType.setIcon(FontAwesomeIcons.fa_comments_o);
-            checkAccessStatus(viewHolder, unit);
-        } else if (!unit.isMultiDevice()) {
-            // If we reach here & the type is VIDEO, it means the video is webOnly
-            viewHolder.bulkDownload.setVisibility(View.INVISIBLE);
-            viewHolder.rowType.setIcon(FontAwesomeIcons.fa_laptop);
-            viewHolder.rowType.setIconColorResource(R.color.edx_brand_gray_accent);
-        } else {
-            viewHolder.bulkDownload.setVisibility(View.INVISIBLE);
-            if (unit.getType() == BlockType.PROBLEM) {
-                viewHolder.rowType.setIcon(FontAwesomeIcons.fa_list);
-            } else {
-                viewHolder.rowType.setIcon(FontAwesomeIcons.fa_file_o);
-            }
-            checkAccessStatus(viewHolder, unit);
+        if (row.component instanceof HtmlBlockModel) {
+            viewHolder.blockTypeIcon.setIcon(FontAwesomeIcons.fa_text_height);
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.GONE);
         }
+        if (config.isDiscussionsEnabled() && row.component instanceof DiscussionBlockModel) {
+            viewHolder.blockTypeIcon.setIcon(FontAwesomeIcons.fa_comments_o);
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.GONE);
+            checkAccessStatus(viewHolder, currentCourseComponent);
+
+        } else if (!currentCourseComponent.isMultiDevice()) {
+            // If we reach here & the type is VIDEO, it means the video is webOnly
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.GONE);
+            viewHolder.blockTypeIcon.setIcon(FontAwesomeIcons.fa_laptop);
+        }
+        else {
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.INVISIBLE);
+            if (currentCourseComponent.getType() == BlockType.PROBLEM) {
+                viewHolder.blockTypeIcon.setIcon(FontAwesomeIcons.fa_list);
+            }
+            checkAccessStatus(viewHolder, currentCourseComponent);
+        }
+    }
+
+    //This function will tell what marker type should be used
+    private int getTypeForTimelineMarker(int position)
+    {
+        final SectionRow row = this.getItem(position);
+
+        int typeToReturn ;
+
+        SectionRow previousRow = this.getItem(position-1);
+        SectionRow nextSectionRow = this.getItem(position+1);
+        //no previous item
+        if(previousRow == null)
+        {
+            return 0;
+        }
+        //list has reached its end and we don't need to show end line
+        if(nextSectionRow == null)
+        {
+            typeToReturn =  LineType.END;
+        }
+        //list is continuous so we should show start and end line of the timeline marker
+        else {
+            typeToReturn = LineType.NORMAL;
+        }
+
+        //Enabling below code if you want only marker and no lines if there single item
+
+/*
+        if(previousRow.type == SectionRow.SECTION && nextSectionRow.type == SectionRow.ITEM)
+        {
+            typeToReturn = LineType.BEGIN;
+        }
+        else if(previousRow.type == SectionRow.SECTION && nextSectionRow.type == SectionRow.SECTION)
+        {
+            typeToReturn = LineType.ONLYONE;
+        }
+        else if (previousRow.type == SectionRow.ITEM && nextSectionRow.type == SectionRow.ITEM)
+        {
+            typeToReturn = LineType.NORMAL;
+        }
+*/
+
+        return typeToReturn;
     }
 
     private void checkAccessStatus(final ViewHolder viewHolder, final CourseComponent unit) {
@@ -272,9 +428,9 @@ public class CourseOutlineAdapter extends BaseAdapter {
             @Override
             public void onResult(Boolean accessed) {
                 if (accessed) {
-                    viewHolder.rowType.setIconColorResource(R.color.edx_brand_gray_accent);
+                    viewHolder.blockTypeIcon.setIconColorResource(R.color.edx_brand_gray_accent);
                 } else {
-                    viewHolder.rowType.setIconColorResource(R.color.edx_brand_primary_base);
+                    viewHolder.blockTypeIcon.setIconColorResource(R.color.edx_brand_primary_base);
                 }
             }
 
@@ -285,26 +441,14 @@ public class CourseOutlineAdapter extends BaseAdapter {
         }, unit.getId());
     }
 
+
     private void updateUIForVideo(@NonNull final ViewHolder viewHolder, @NonNull final DownloadEntry videoData) {
-        viewHolder.rowType.setIcon(FontAwesomeIcons.fa_film);
-        viewHolder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
-        viewHolder.bulkDownload.setVisibility(View.VISIBLE);
-        viewHolder.rowSubtitlePanel.setVisibility(View.VISIBLE);
         if (videoData.getDuration() > 0L) {
-            viewHolder.rowSubtitle.setVisibility(View.VISIBLE);
-            viewHolder.rowSubtitle.setText(videoData.getDurationReadable());
+            viewHolder.subSectionDescriptionTV.setVisibility(View.VISIBLE);
+            viewHolder.subSectionDescriptionTV.setText(videoData.getDurationReadable());
         }
         if (videoData.getSize() > 0L) {
-            viewHolder.rowSubtitleDueDate.setVisibility(View.VISIBLE);
-            viewHolder.rowSubtitleDueDate.setText(MemoryUtil.format(context, videoData.getSize()));
-            // Set appropriate right margin of subtitle
-            final int rightMargin = (int) context.getResources().getDimension(R.dimen.widget_margin_double);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)
-                    viewHolder.rowSubtitle.getLayoutParams();
-            params.setMargins(0, 0, rightMargin, 0);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                params.setMarginEnd(rightMargin);
-            }
+            viewHolder.subSectionDescriptionTV.setText(viewHolder.subSectionDescriptionTV.getText().toString()+" | "+ MemoryUtil.format(context, videoData.getSize()));
         }
 
         dbStore.getWatchedStateForVideoId(videoData.videoId,
@@ -312,9 +456,9 @@ public class CourseOutlineAdapter extends BaseAdapter {
                     @Override
                     public void onResult(DownloadEntry.WatchedState result) {
                         if (result != null && result == DownloadEntry.WatchedState.WATCHED) {
-                            viewHolder.rowType.setIconColorResource(R.color.edx_brand_gray_accent);
+                            viewHolder.blockTypeIcon.setIconColorResource(R.color.edx_brand_gray_accent);
                         } else {
-                            viewHolder.rowType.setIconColorResource(R.color.edx_brand_primary_base);
+                            viewHolder.blockTypeIcon.setIconColorResource(R.color.edx_brand_primary_base);
                         }
                     }
 
@@ -325,9 +469,9 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 });
 
         if (videoData.isVideoForWebOnly()) {
-            viewHolder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.GONE);
         } else {
-            viewHolder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
+            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.VISIBLE);
             dbStore.getDownloadedStateForVideoId(videoData.videoId,
                     new DataCallback<DownloadEntry.DownloadedState>(true) {
                         @Override
@@ -341,6 +485,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
                                                 mDownloadListener.download(videoData);
                                             }
                                         });
+
                             } else if (state == DownloadEntry.DownloadedState.DOWNLOADING) {
                                 // may be download in progress
                                 setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADING,
@@ -350,6 +495,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
                                                 mDownloadListener.viewDownloadsStatus();
                                             }
                                         });
+
                             } else if (state == DownloadEntry.DownloadedState.DOWNLOADED) {
                                 setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADED, null);
                             }
@@ -358,81 +504,16 @@ public class CourseOutlineAdapter extends BaseAdapter {
                         @Override
                         public void onFail(Exception ex) {
                             logger.error(ex);
-                            viewHolder.bulkDownload.setVisibility(View.VISIBLE);
+                            viewHolder.courseAvailabilityStatusIcon.setVisibility(View.VISIBLE);
+
+                            //                            viewHolder.bulkDownload.setVisibility(View.VISIBLE);
                         }
                     });
         }
 
     }
 
-    private void getRowViewForContainer(ViewHolder holder,
-                                        final SectionRow row) {
-        final CourseComponent component = row.component;
-        String courseId = component.getCourseId();
-        BlockPath path = component.getPath();
-        //FIXME - we should add a new column in database - pathinfo.
-        //then do the string match to get the record
-        String chapterId = path.get(1) == null ? "" : path.get(1).getDisplayName();
-        String sequentialId = path.get(2) == null ? "" : path.get(2).getDisplayName();
 
-        holder.rowTitle.setText(component.getDisplayName());
-        holder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
-        if (component.isGraded()) {
-            holder.bulkDownload.setVisibility(View.INVISIBLE);
-            holder.rowSubtitlePanel.setVisibility(View.VISIBLE);
-            holder.rowSubtitleIcon.setVisibility(View.VISIBLE);
-            holder.rowSubtitle.setVisibility(View.VISIBLE);
-            holder.rowSubtitle.setText(component.getFormat());
-            holder.rowSubtitle.setTypeface(holder.rowSubtitle.getTypeface(), Typeface.BOLD);
-            holder.rowSubtitle.setTextColor(ContextCompat.getColor(context,
-                    R.color.edx_brand_gray_dark));
-            if (!TextUtils.isEmpty(component.getDueDate())) {
-                try {
-                    holder.rowSubtitleDueDate.setText(getFormattedDueDate(component.getDueDate()));
-                    holder.rowSubtitleDueDate.setVisibility(View.VISIBLE);
-                } catch (IllegalArgumentException e) {
-                    logger.error(e);
-                }
-            }
-        }
-
-        final int totalDownloadableVideos = component.getDownloadableVideosCount();
-        // support video download for video type excluding the ones only viewable on web
-        if (totalDownloadableVideos == 0) {
-            holder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
-        } else {
-            holder.bulkDownload.setVisibility(View.VISIBLE);
-            holder.noOfVideos.setVisibility(View.VISIBLE);
-            holder.noOfVideos.setText("" + totalDownloadableVideos);
-
-            Integer downloadedCount = dbStore.getDownloadedVideosCountForSection(courseId,
-                    chapterId, sequentialId, null);
-
-            if (downloadedCount == totalDownloadableVideos) {
-                holder.noOfVideos.setVisibility(View.VISIBLE);
-                setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADED, null);
-            } else if (dbStore.getDownloadingVideosCountForSection(courseId, chapterId,
-                    sequentialId, null) + downloadedCount == totalDownloadableVideos) {
-                holder.noOfVideos.setVisibility(View.GONE);
-                setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADING,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View downloadView) {
-                                mDownloadListener.viewDownloadsStatus();
-                            }
-                        });
-            } else {
-                holder.noOfVideos.setVisibility(View.VISIBLE);
-                setRowStateOnDownload(holder, DownloadEntry.DownloadedState.ONLINE,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View downloadView) {
-                                mDownloadListener.download(component.getVideos());
-                            }
-                        });
-            }
-        }
-    }
 
     private String getFormattedDueDate(final String date) throws IllegalArgumentException {
         final SimpleDateFormat dateFormat;
@@ -457,86 +538,70 @@ public class CourseOutlineAdapter extends BaseAdapter {
      * @param state    current state of video download
      * @param listener the listener to attach to the video download button
      */
+
     private void setRowStateOnDownload(ViewHolder row, DownloadEntry.DownloadedState state
             , View.OnClickListener listener) {
         switch (state) {
             case DOWNLOADING:
-                row.bulkDownload.setIcon(FontAwesomeIcons.fa_spinner);
-                row.bulkDownload.setIconAnimation(Animation.PULSE);
-                row.bulkDownload.setIconColorResource(R.color.edx_brand_primary_base);
+
+                row.courseAvailabilityStatusIcon.setIcon(FontAwesomeIcons.fa_spinner);
+                row.courseAvailabilityStatusIcon.setIconAnimation(Animation.PULSE);
+                row.courseAvailabilityStatusIcon.setIconColorResource(R.color.white);
                 break;
+
             case DOWNLOADED:
-                row.bulkDownload.setIcon(FontAwesomeIcons.fa_check);
-                row.bulkDownload.setIconAnimation(Animation.NONE);
-                row.bulkDownload.setIconColorResource(R.color.edx_brand_gray_accent);
+
+                row.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_done);
+                row.courseAvailabilityStatusIcon.setIconAnimation(Animation.NONE);
+                row.courseAvailabilityStatusIcon.setIconColorResource(R.color.white);
+                row.courseAvailabilityStatusIcon.setTag(AppConstants.DOWNLOADED_VIDEOS_ROW_ICON_TAG);
                 break;
             case ONLINE:
-                row.bulkDownload.setIcon(FontAwesomeIcons.fa_download);
-                row.bulkDownload.setIconAnimation(Animation.NONE);
-                row.bulkDownload.setIconColorResource(R.color.edx_brand_gray_accent);
+
+                row.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_download_media);
+                row.courseAvailabilityStatusIcon.setIconAnimation(Animation.NONE);
+                row.courseAvailabilityStatusIcon.setIconColorResource(R.color.white);
                 break;
         }
-        row.numOfVideoAndDownloadArea.setOnClickListener(listener);
+        row.courseAvailabilityStatusIcon.setOnClickListener(listener);
         if (listener == null) {
-            row.numOfVideoAndDownloadArea.setClickable(false);
+            row.courseAvailabilityStatusIcon.setClickable(false);
         }
     }
 
+
     public View getHeaderView(int position, View convertView) {
         final SectionRow row = this.getItem(position);
-        TextView titleView = (TextView) convertView.findViewById(R.id.row_header);
-        View separator = convertView.findViewById(R.id.row_separator);
+        TextView titleView = (TextView) convertView.findViewById(R.id.section_title);
         titleView.setText(row.component.getDisplayName());
-        if (position == 0) {
-            separator.setVisibility(View.GONE);
-        } else {
-            separator.setVisibility(View.VISIBLE);
-        }
         return convertView;
     }
 
     public ViewHolder getTag(View convertView) {
         ViewHolder holder = new ViewHolder();
-        holder.rowType = (IconImageView) convertView
-                .findViewById(R.id.row_type);
-        holder.rowTitle = (TextView) convertView
-                .findViewById(R.id.row_title);
-        holder.rowSubtitle = (TextView) convertView
-                .findViewById(R.id.row_subtitle);
-        holder.rowSubtitleDueDate = (TextView) convertView
-                .findViewById(R.id.row_subtitle_due_date);
-        holder.rowSubtitleIcon = (IconImageView) convertView
-                .findViewById(R.id.row_subtitle_icon);
-        holder.rowSubtitleIcon.setIconColorResource(R.color.edx_brand_primary_base);
-        holder.noOfVideos = (TextView) convertView
-                .findViewById(R.id.no_of_videos);
-        holder.bulkDownload = (IconImageView) convertView
-                .findViewById(R.id.bulk_download);
-        holder.bulkDownload.setIconColorResource(R.color.edx_brand_gray_accent);
-        holder.numOfVideoAndDownloadArea = (LinearLayout) convertView
-                .findViewById(R.id.bulk_download_layout);
-        holder.rowSubtitlePanel = convertView.findViewById(R.id.row_subtitle_panel);
-        holder.halfSeparator = convertView.findViewById(R.id.row_half_separator);
-        holder.wholeSeparator = convertView.findViewById(R.id.row_whole_separator);
-
-        // Accessibility
-        ViewCompat.setImportantForAccessibility(holder.rowSubtitle, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        holder.sectionTitleTV = (TextView)convertView.findViewById(R.id.section_title);
+        holder.subSectionTitleTV = (TextView) convertView.findViewById(R.id.subsection_title_tv);
+        holder.subSectionDescriptionTV = (TextView) convertView.findViewById(R.id.subsection_desription);
+        holder.timelineViewMarker = (TimelineView) convertView.findViewById(R.id.subsection_timeline_marker);
+        holder.courseAvailabilityStatusIcon = (IconImageViewXml) convertView.findViewById(R.id.course_availability_status_icon);
+        holder.multipleItemsCV = (CardView) convertView.findViewById(R.id.multiple_items_cv);
+        holder.blockTypeIcon = (IconImageViewXml) convertView.findViewById(R.id.block_type_icon);
+        holder.titlesContainer = (RelativeLayout) convertView.findViewById(R.id.title_container);
+        holder.blockContainer = (RelativeLayout) convertView.findViewById(R.id.block_container);
+        holder.cardviewContainer = (FrameLayout) convertView.findViewById(R.id.card_holder);
+        holder.rowCardview = (CardView) convertView.findViewById(R.id.subsection_row_cv);
 
         return holder;
     }
 
     public static class ViewHolder {
-        IconImageView rowType;
-        TextView rowTitle;
-        TextView rowSubtitle;
-        TextView rowSubtitleDueDate;
-        IconImageView rowSubtitleIcon;
-        IconImageView bulkDownload;
-        TextView noOfVideos;
-        LinearLayout numOfVideoAndDownloadArea;
-        View rowSubtitlePanel;
-        View halfSeparator;
-        View wholeSeparator;
+        TextView subSectionTitleTV, sectionTitleTV, subSectionDescriptionTV;
+        TimelineView timelineViewMarker;
+        IconImageViewXml courseAvailabilityStatusIcon, blockTypeIcon;
+        CardView multipleItemsCV;
+        RelativeLayout blockContainer, titlesContainer;
+        FrameLayout cardviewContainer;
+        CardView rowCardview;
     }
 
     public static class SectionRow {
@@ -565,5 +630,44 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 return i;
         }
         return -1;
+    }
+
+    public void setLastAccessedId(String lastAccessedId)
+    {
+        this.lastAccessedId = lastAccessedId;
+        lastAccessedPosition = -1;
+        hasLastAccessedShown = false;
+        notifyDataSetChanged();
+    }
+
+    //This function will be used to add the selected items to be marked on Listview item long click(Only downloaded media/Videos)
+    public void addSelectedItemPosition(int position)
+    {
+        if(selectedItemPositions != null)
+        {
+            selectedItemPositions.add(position);
+            notifyDataSetChanged();
+        }
+    }
+    //This function will be used to remove the selected items to be unmarked on Listview item long click(Only downloaded media/Videos)
+
+    public void removeSelectedItemPosition(int position)
+    {
+        if(selectedItemPositions != null && selectedItemPositions.size() > 0)
+        {
+            selectedItemPositions.remove(position);
+            notifyDataSetChanged();
+        }
+    }
+    //This function will be used to remove all selected items to be unmarked/unselected on Listview (on ActionItemView dismissal)
+
+    public void clearSelectedItemPositions()
+    {
+        if(selectedItemPositions != null && selectedItemPositions.size() > 0)
+        {
+            selectedItemPositions.clear();
+            notifyDataSetChanged();
+        }
+
     }
 }
