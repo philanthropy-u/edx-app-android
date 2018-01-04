@@ -264,6 +264,17 @@ public class IDatabaseImpl extends IDatabaseBaseImpl implements IDatabase {
     }
 
     @Override
+    public int getDownloadedVideosCountForCourse(String enrollmentId) {
+        DbOperationGetCount op = new DbOperationGetCount(false, DbStructure.Table.DOWNLOADS,
+                new String[]{DbStructure.Column.DM_ID},
+                DbStructure.Column.DOWNLOADED + "=? AND " + DbStructure.Column.EID + "=? AND "
+                        + DbStructure.Column.USERNAME + "=?",
+                new String[]{String.valueOf(DownloadedState.DOWNLOADED.ordinal()),
+                        enrollmentId, username()}, null);
+        return enqueue(op);
+    }
+
+    @Override
     public long[] getDownloadedVideoDmIdsForSection(String enrollmentId, String chapter,
                                                     String section,
                                                     final DataCallback<List<Long>> callback) {

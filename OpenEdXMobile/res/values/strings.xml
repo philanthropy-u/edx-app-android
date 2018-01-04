@@ -628,5 +628,7 @@
     <string name="view_my_courses" tools:ignore="MissingTranslation">View My Courses</string>
 
     <string name="app_tag_line" tools:ignore="MissingTranslation">Offline Content Viewer</string>
+    <string name="downloading">Downloading</string>
+    <string name="media_saved_time_ago">Media saved</string>
 
 </resources>

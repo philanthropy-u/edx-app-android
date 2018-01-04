@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.edx.mobile.model.course.HasDownloadEntry;
 import org.edx.mobile.social.SocialMember;
 import org.edx.mobile.util.UnicodeCharacters;
 import org.edx.mobile.util.UrlUtil;
