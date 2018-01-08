@@ -1,7 +1,5 @@
 package org.edx.mobile.module.db;
 
-import android.support.annotation.Nullable;
-
 import org.edx.mobile.model.VideoModel;
 import org.edx.mobile.model.db.DownloadEntry.DownloadedState;
 import org.edx.mobile.model.db.DownloadEntry.WatchedState;
@@ -460,5 +458,5 @@ public interface IDatabase {
     boolean isUnitAccessed(DataCallback<Boolean> callback, String unitId);
 
     // get course content local download timestamp
-    Integer getLastVideoDownloadTimeForCourse(String courseId);
+    Long getLastVideoDownloadTimeForCourse(String courseId);
 }

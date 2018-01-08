@@ -629,6 +629,6 @@
 
     <string name="app_tag_line" tools:ignore="MissingTranslation">Offline Content Viewer</string>
     <string name="downloading">Downloading</string>
-    <string name="media_saved_time_ago">Media saved</string>
+    <string name="media_saved_time_ago">Media saved %s</string>
 
 </resources>

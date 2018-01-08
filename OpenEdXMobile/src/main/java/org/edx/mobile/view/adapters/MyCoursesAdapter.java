@@ -3,14 +3,11 @@ package org.edx.mobile.view.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.internal.Animation;
-
-import org.edx.mobile.R;
 import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.model.api.CourseEntry;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
@@ -20,7 +17,9 @@ import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.util.images.CourseCardUtils;
 
+import java.util.Date;
 import java.util.List;
+import android.text.format.DateUtils;
 
 
 public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesResponse> {
@@ -68,11 +67,12 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
             int downloadedCount = environment.getDatabase().getDownloadedVideosCountForCourse(courseData.getId());
 
             if (downloadedCount == totalDownloadableVideos) {
-                Integer downloadTimeStamp = environment.getDatabase().getLastVideoDownloadTimeForCourse(courseData.getId());
-                setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADED, null);
+                Long downloadTimeStamp = environment.getDatabase().getLastVideoDownloadTimeForCourse(courseData.getId());
+                String relativeTimeSpanString = getRelativeTimeStringFromNow(downloadTimeStamp);
+                setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADED, relativeTimeSpanString, null);
             } else if (environment.getDatabase().isAnyVideoDownloadingInCourse(null, courseData.getId())) {
                 setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADING,
-                        new View.OnClickListener() {
+                        null, new View.OnClickListener() {
                             @Override
                             public void onClick(View downloadView) {
                                 viewDownloadsStatus();
@@ -80,7 +80,7 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
                         });
             } else {
                 setRowStateOnDownload(holder, DownloadEntry.DownloadedState.ONLINE,
-                        new View.OnClickListener() {
+                        null, new View.OnClickListener() {
                             @Override
                             public void onClick(View downloadView) {
                                 download(component.getVideos());
@@ -90,11 +90,16 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
         }
     }
 
+    @NonNull
+    private String getRelativeTimeStringFromNow(Long downloadTimeStamp) {
+        return DateUtils.getRelativeTimeSpanString(downloadTimeStamp, new Date().getTime(), 0).toString();
+    }
+
     private void setRowStateOnDownload(CourseCardViewHolder row, DownloadEntry.DownloadedState state
-            , OnClickListener listener) {
+            , String relativeTimeStamp, OnClickListener listener) {
 
         row.showDownloadStatusContainer();
-        row.updateDownloadStatus(getContext(), state, listener);
+        row.updateDownloadStatus(getContext(), state, listener, relativeTimeStamp);
     }
 
 

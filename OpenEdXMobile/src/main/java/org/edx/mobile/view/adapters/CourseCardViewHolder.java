@@ -1,12 +1,10 @@
 package org.edx.mobile.view.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -78,7 +76,7 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
         courseStatusUnit.setVisibility(View.VISIBLE);
     }
 
-    public void updateDownloadStatus(Context context, DownloadEntry.DownloadedState state, View.OnClickListener listener) {
+    public void updateDownloadStatus(Context context, DownloadEntry.DownloadedState state, View.OnClickListener listener, String relativeTimeStamp) {
         switch (state) {
             case DOWNLOADING:
                 courseDownloadStatusIcon.setIcon(FontAwesomeIcons.fa_spinner);
@@ -92,7 +90,7 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
                 courseDownloadStatusIcon.setImageResource(R.drawable.ic_done);
                 courseDownloadStatusIcon.setIconAnimation(Animation.NONE);
                 courseDownloadStatusIcon.setIconColorResource(R.color.black);
-                courseDownloadStatus.setText(R.string.media_saved_time_ago);
+                courseDownloadStatus.setText(String.format(context.getString(R.string.media_saved_time_ago), relativeTimeStamp));
                 courseDownloadStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
                 courseStatusUnit.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_1));
                 break;

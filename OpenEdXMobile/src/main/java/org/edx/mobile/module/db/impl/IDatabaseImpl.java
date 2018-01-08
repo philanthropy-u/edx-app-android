@@ -784,12 +784,15 @@ public class IDatabaseImpl extends IDatabaseBaseImpl implements IDatabase {
     }
 
     @Override
-    public Integer getLastVideoDownloadTimeForCourse(String courseId) {
-        DbOperationSingleValueByRawQuery<Integer> op = new DbOperationSingleValueByRawQuery<>(
-                "SELECT MAX("+ DbStructure.Column.DOWNLOADED_ON +") FROM " + DbStructure.Table.DOWNLOADS + " where " + DbStructure.Column.EID + "=? AND " + DbStructure.Column.USERNAME + "=? AND " + DbStructure.Column.DOWNLOADED + "=?",
-                new String[]{courseId, username(),
-                        String.valueOf(DownloadedState.DOWNLOADED.ordinal())},
-                Integer.class);
-        return enqueue(op);
+    public Long getLastVideoDownloadTimeForCourse(String courseId) {
+        DbOperationGetColumn<Long> op = new DbOperationGetColumn<Long>(true,
+                DbStructure.Table.DOWNLOADS,
+                new String[]{DbStructure.Column.DOWNLOADED_ON},
+                DbStructure.Column.DOWNLOADED + "=? AND "
+                        + DbStructure.Column.EID + "=? AND "
+                        + DbStructure.Column.USERNAME + "=?",
+                new String[]{String.valueOf(DownloadedState.DOWNLOADED.ordinal()),
+                        courseId, username()}, DbStructure.Column.DOWNLOADED_ON + " DESC ", Long.class);
+        return enqueue(op).get(0);
     }
 }
