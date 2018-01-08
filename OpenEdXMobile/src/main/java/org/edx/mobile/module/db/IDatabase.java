@@ -459,4 +459,6 @@ public interface IDatabase {
      */
     boolean isUnitAccessed(DataCallback<Boolean> callback, String unitId);
 
+    // get course content local download timestamp
+    Integer getLastVideoDownloadTimeForCourse(String courseId);
 }

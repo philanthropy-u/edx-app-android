@@ -782,4 +782,14 @@ public class IDatabaseImpl extends IDatabaseBaseImpl implements IDatabase {
         List<Boolean> result = enqueue(op);
         return result != null && result.size() > 0 ? result.get(0) : false;
     }
+
+    @Override
+    public Integer getLastVideoDownloadTimeForCourse(String courseId) {
+        DbOperationSingleValueByRawQuery<Integer> op = new DbOperationSingleValueByRawQuery<>(
+                "SELECT MAX("+ DbStructure.Column.DOWNLOADED_ON +") FROM " + DbStructure.Table.DOWNLOADS + " where " + DbStructure.Column.EID + "=? AND " + DbStructure.Column.USERNAME + "=? AND " + DbStructure.Column.DOWNLOADED + "=?",
+                new String[]{courseId, username(),
+                        String.valueOf(DownloadedState.DOWNLOADED.ordinal())},
+                Integer.class);
+        return enqueue(op);
+    }
 }

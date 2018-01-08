@@ -68,6 +68,7 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
             int downloadedCount = environment.getDatabase().getDownloadedVideosCountForCourse(courseData.getId());
 
             if (downloadedCount == totalDownloadableVideos) {
+                Integer downloadTimeStamp = environment.getDatabase().getLastVideoDownloadTimeForCourse(courseData.getId());
                 setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADED, null);
             } else if (environment.getDatabase().isAnyVideoDownloadingInCourse(null, courseData.getId())) {
                 setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADING,
