@@ -20,6 +20,7 @@ import com.joanzapata.iconify.widget.IconImageView;
 
 import org.edx.mobile.R;
 import org.edx.mobile.logger.Logger;
+import org.edx.mobile.model.course.AudioBlockModel;
 import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
@@ -244,7 +245,14 @@ public class CourseOutlineAdapter extends BaseAdapter {
         if (row.component instanceof VideoBlockModel) {
             final DownloadEntry videoData = ((VideoBlockModel) row.component).getDownloadEntry(storage);
             if (null != videoData) {
-                updateUIForVideo(viewHolder, videoData);
+                updateUIForVideo(viewHolder, videoData, FontAwesomeIcons.fa_film);
+                return;
+            }
+        }
+        if (row.component instanceof AudioBlockModel) {
+            final DownloadEntry audioData = ((AudioBlockModel) row.component).getDownloadEntry(storage);
+            if (null != audioData) {
+                updateUIForVideo(viewHolder, audioData, FontAwesomeIcons.fa_volume_up);
                 return;
             }
         }
@@ -285,8 +293,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         }, unit.getId());
     }
 
-    private void updateUIForVideo(@NonNull final ViewHolder viewHolder, @NonNull final DownloadEntry videoData) {
-        viewHolder.rowType.setIcon(FontAwesomeIcons.fa_film);
+    private void updateUIForVideo(@NonNull final ViewHolder viewHolder, @NonNull final DownloadEntry videoData, FontAwesomeIcons icon) {
+        viewHolder.rowType.setIcon(icon);
         viewHolder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
         viewHolder.bulkDownload.setVisibility(View.VISIBLE);
         viewHolder.rowSubtitlePanel.setVisibility(View.VISIBLE);
@@ -307,7 +315,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
             }
         }
 
-        dbStore.getWatchedStateForVideoId(videoData.videoId,
+        dbStore.getWatchedStateForVideoId(videoData.blockId,
                 new DataCallback<DownloadEntry.WatchedState>(true) {
                     @Override
                     public void onResult(DownloadEntry.WatchedState result) {
@@ -328,7 +336,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
             viewHolder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
         } else {
             viewHolder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
-            dbStore.getDownloadedStateForVideoId(videoData.videoId,
+            dbStore.getDownloadedStateForVideoId(videoData.blockId,
                     new DataCallback<DownloadEntry.DownloadedState>(true) {
                         @Override
                         public void onResult(DownloadEntry.DownloadedState state) {

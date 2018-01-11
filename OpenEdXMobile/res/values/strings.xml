@@ -402,6 +402,8 @@
     <string name="msg_video_not_downloaded">"Unable to download video"</string>
     <!-- Error shown when video download fails -->
     <string name="msg_video_not_available">This video is currently unavailable.\nCheck back again later.</string>
+    <!-- Error shown when audio download fails -->
+    <string name="msg_audio_not_available">This audio is currently unavailable.\nCheck back again later.</string>
     <!-- Error shown when video has flag to indicate it is not available for mobile app -->
     <string name="video_only_on_web_label">This video is currently only on web. Click to view on web.</string>
     <!-- Message to indicate the it is not available for mobile app  -->
@@ -628,5 +630,6 @@
     <string name="view_my_courses" tools:ignore="MissingTranslation">View My Courses</string>
 
     <string name="app_tag_line" tools:ignore="MissingTranslation">Offline Content Viewer</string>
+    <string name="audio_player" tools:ignore="MissingTranslation">Audio Player</string>
 
 </resources>
