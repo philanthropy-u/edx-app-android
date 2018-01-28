@@ -34,7 +34,7 @@
             android:layout_marginTop="@dimen/audio_play_pause_icon_size"
             android:layout_gravity="center"
             android:scaleType="centerInside"
-            android:padding="@dimen/edx_base"
+            android:padding="@dimen/edx_margin"
             android:contentDescription="@null"
             app:iconAnimation="pulse"
             />

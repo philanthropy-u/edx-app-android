@@ -151,7 +151,7 @@ public class AudioController extends PlayerController {
 
         try {
             if(playPauseIcon != null){
-                if(!mPlayer.canPause()){
+                if(!mPlayer.canPause() && !mPlayer.isPlayBackComplete() && !mPlayer.isReset()){
                     playPauseIcon.setEnabled(false);
                 }else{
                     playPauseIcon.setEnabled(true);
@@ -159,7 +159,7 @@ public class AudioController extends PlayerController {
             }
 
             if(audioProgressSeekbar != null){
-                if(!mPlayer.canSeekBackward() || ! mPlayer.canSeekForward())
+                if((!mPlayer.canSeekBackward() || ! mPlayer.canSeekForward()) && !mPlayer.isPlayBackComplete() && !mPlayer.isReset())
                 {
                     audioProgressSeekbar.setEnabled(false);
                 }
