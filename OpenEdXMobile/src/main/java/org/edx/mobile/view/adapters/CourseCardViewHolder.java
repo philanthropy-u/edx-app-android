@@ -37,7 +37,8 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
         Glide.with(courseImage.getContext())
                 .load(imageUrl)
                 .placeholder(R.drawable.placeholder_course_card_image)
-                .centerCrop()
+                .fitCenter()
+                .dontAnimate()
                 .into(courseImage);
     }
 
