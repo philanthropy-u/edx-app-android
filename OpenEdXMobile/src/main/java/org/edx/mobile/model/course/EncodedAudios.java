@@ -17,10 +17,10 @@ public class EncodedAudios implements Serializable {
 
     @Nullable
     public String getPreferredPlaybackUrl() {
-        if (oggUrl != null && URLUtil.isNetworkUrl(oggUrl))
-            return oggUrl;
         if (mp3Url != null && URLUtil.isNetworkUrl(mp3Url))
             return mp3Url;
+        if (oggUrl != null && URLUtil.isNetworkUrl(oggUrl))
+            return oggUrl;
         return null;
     }
 

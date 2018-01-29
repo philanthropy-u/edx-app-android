@@ -475,8 +475,8 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
             }
         } else {
             DownloadEntry de = (DownloadEntry) DatabaseFactory.getInstance(DatabaseFactory.TYPE_DATABASE_NATIVE)
-                    .getDownloadEntryByMediaId(
-                            audio.getBlockId(), null);
+                    .getDownloadEntryByMediaUrl(
+                            audio.url, null);
             if (de != null) {
                 if (de.filepath != null) {
                     File f = new File(de.filepath);
@@ -494,7 +494,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
             // not available on local, so play online
             logger.warn("Local file path not available");
 
-            filepath = audio.getBestEncodingUrl(getActivity());
+            filepath = audio.getDownloadUrl();
         }
         return filepath;
     }
