@@ -75,7 +75,9 @@ public class AudioMediaService extends Service implements IPlayerListener{
             switch (action){
                 case START_SERVICE:{
                     //Stop the notification if already shown
-                    stopForegroundService(true);
+                    if(isRunningForeground){
+                        stopForegroundService(true);
+                    }
                     isServiceCancelled = false;
                     break;
                 }
@@ -148,6 +150,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
             currentPlayer.setPlayerListener(this);
             initializeCustomNotification();
             startForeground(NOTIFICATION_ID,notification);
+            isRunningForeground = true;
         }else{
             resetAllPlayers();
             releaseAllPlayers();

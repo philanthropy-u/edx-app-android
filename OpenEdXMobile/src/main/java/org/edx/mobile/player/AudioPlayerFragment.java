@@ -145,6 +145,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
     Intent serviceIntent;
     private boolean isAudioObtainable = true;
     private int lastPlaybackTime = 0;
+    private String audioFilePath;
     private final transient Handler handler = new Handler() {
         private int lastSavedPosition;
 
@@ -159,6 +160,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                             lastSavedPosition = pos;
                             callback.saveCurrentPlaybackPosition(pos);
                             logger.debug("Current position saved: " + pos);
+                            lastPlaybackTime = pos;
                         }
                     }
                 }
@@ -229,7 +231,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             }
         } else {
             if(audioMediaService!= null && audioEntry != null){
-                player = audioMediaService.getOrAddPLayer((Player) player , audioEntry.getMp3Url());
+                player = audioMediaService.getOrAddPLayer((Player) player , getAudioPath());
                 player.setPlayerListener(AudioPlayerFragment.this);
             }
             else if (player == null) {
@@ -374,7 +376,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
 
     public void handleOnResume() {
         if(audioMediaService!= null && audioEntry != null){
-            player = audioMediaService.getOrAddPLayer((Player) player ,audioEntry.getMp3Url());
+            player = audioMediaService.getOrAddPLayer((Player) player , getAudioPath());
             player.setPlayerListener(AudioPlayerFragment.this);
         }
 
@@ -440,7 +442,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         super.onDestroy();
         uiHelper.onDestroy();
         checkFragmentStatusAndStartService();
-        if(player != null){
+        if(player != null && player.isPlaying()){
             lastPlaybackTime = player.getCurrentPosition();
         }
         if (!stateSaved) {
@@ -539,10 +541,6 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             // show loading indicator as player will prepare now
             showProgress();
 
-//            if (path == null && audioEntry != null && audioEntry.getMp3Url() != null) {
-//                path = audio.getMp3Url();
-//            }
-
             if (path == null || path.trim().length() == 0) {
                 showAudioNotAvailable(AudioNotPlayMessageType.IS_AUDIO_MESSAGE_DISPLAYED);
                 //return;
@@ -555,24 +553,13 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             player.setMediaTitle(title);
 
             logger.debug("playing [seek=" + seekTo + "]: " + path);
-
+            audioFilePath = path;
+            lastPlaybackTime = seekTo;
             if (prepareOnly) {
 
                 player.setUri(path , seekTo);
-//                if (path == null) {
-//                    player.setUri(path, seekTo);
-//                } else {
-//                    player.setUri(path, seekTo);
-//                }
             } else {
-                    player.setUriAndPlay(path, seekTo);
-
-                //                if (path == null) {
-//                    player.setUriAndPlay(audioEntry.getMp3Url(), seekTo);
-//                } else {
-//                    player.setUriAndPlay(path, seekTo);
-//
-//                }
+                player.setUriAndPlay(path, seekTo);
 
                 if(audioMediaService != null){
                     audioMediaService.setPlayer((Player) player);
@@ -1032,7 +1019,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                     else if(isPrepared && player.isReset() && audioEntry != null){
                         try {
                             showProgress();
-                            player.setUriAndPlay(audioEntry.getBestEncodingUrl(getContext()) , lastPlaybackTime);
+                            player.setUriAndPlay(getAudioPath() , lastPlaybackTime);
                             player.setPlayerListener(AudioPlayerFragment.this);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -1797,7 +1784,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                 isServiceBound = true;
                 if(player != null && audioEntry != null)
                 {
-                    player = audioMediaService.getOrAddPLayer((Player) player, audioEntry.getMp3Url());
+                    player = audioMediaService.getOrAddPLayer((Player) player, getAudioPath());
                     player.setPlayerListener(AudioPlayerFragment.this);
                 }
             }
@@ -1823,5 +1810,10 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             audioMediaService.startForegroundService();
             removeSubtitleCallBack();
         }
+    }
+
+    private String getAudioPath()
+    {
+        return audioFilePath;
     }
 }
