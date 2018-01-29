@@ -15,6 +15,7 @@
         android:choiceMode="singleChoice"
         android:divider="@null"
         android:dividerHeight="0dp"
+        android:overScrollMode="never"
         android:listSelector="@android:color/transparent" />
 
     <LinearLayout

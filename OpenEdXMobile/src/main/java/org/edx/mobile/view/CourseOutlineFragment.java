@@ -37,11 +37,9 @@ import org.edx.mobile.base.BaseFragment;
 import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
-import org.edx.mobile.model.course.AudioBlockModel;
 import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.HasDownloadEntry;
-import org.edx.mobile.model.course.VideoBlockModel;
 import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.module.storage.DownloadCompletedEvent;
 import org.edx.mobile.module.storage.DownloadedVideoDeletedEvent;
@@ -195,7 +193,7 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     }
 
     private void setRowStateOnDownload(DownloadEntry.DownloadedState state, String relativeTimeStamp, View.OnClickListener listener) {
-        if(isVisible()) {
+        if (isVisible()) {
             listView.setOnScrollListener(onScrollListener());
             courseStatusUnit.setVisibility(View.VISIBLE);
             updateDownloadStatus(getContext(), state, listener, relativeTimeStamp);
@@ -205,34 +203,30 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     public AbsListView.OnScrollListener onScrollListener() {
         return new AbsListView.OnScrollListener() {
 
+            int mOffset = 0;
+            int mPosition = 0;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if(scrollState == SCROLL_STATE_IDLE) {
+                    int position = listView.getFirstVisiblePosition();
+                    View v = listView.getChildAt(0);
+                    int offset = (v == null) ? 0 : v.getTop();
+
+                    if (mPosition < position || (mPosition == position && mOffset < offset)) {
+                        // Scrolled up
+                        courseStatusUnit.setVisibility(View.GONE);
+                    } else {
+                        // Scrolled down
+                        courseStatusUnit.setVisibility(View.VISIBLE);
+                    }
+                    mPosition = position;
+                    mOffset = offset;
+                }
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
-                if (firstVisibleItem == 0) {
-                    // check if we reached the top or bottom of the list
-                    View v = listView.getChildAt(0);
-                    int offset = (v == null) ? 0 : v.getTop();
-                    if (offset == 0) {
-                        // reached the top: visible header and footer
-                        Log.i(TAG, "top reached");
-                    }
-                } else if (totalItemCount - visibleItemCount == firstVisibleItem) {
-                    View v = listView.getChildAt(totalItemCount - 1);
-                    int offset = (v == null) ? 0 : v.getTop();
-                    if (offset == 0) {
-                        // reached the bottom: visible header and footer
-                        Log.i(TAG, "bottom reached!");
-                        courseStatusUnit.setVisibility(View.VISIBLE);
-                    }
-                } else if (totalItemCount - visibleItemCount > firstVisibleItem) {
-                    // on scrolling
-                    courseStatusUnit.setVisibility(View.GONE);
-                    Log.i(TAG, "on scroll");
-                }
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             }
         };
     }
