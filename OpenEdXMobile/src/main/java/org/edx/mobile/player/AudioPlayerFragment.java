@@ -446,8 +446,15 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             lastPlaybackTime = player.getCurrentPosition();
         }
         if (!stateSaved) {
-            removeSubtitleCallBack();
-            logger.debug("player detached, reset and released");
+            if(player!= null){
+                removeSubtitleCallBack();
+                logger.debug("player detached, reset and released");
+                if(!player.isReset())player.reset();
+                // release the player instance
+                player.release();
+                player = null;
+            }
+
         }
     }
 
@@ -696,6 +703,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                             showAudioNotAvailable(AudioNotPlayMessageType.IS_AUDIO_MESSAGE_DISPLAYED);
                         } else {
                             View errorView = getView().findViewById(R.id.panel_network_error);
+                            ((TextView)errorView.findViewById(R.id.error_header)).setText(getString(R.string.network_error_header_audio));
                             errorView.setVisibility(View.VISIBLE);
                         }
 
