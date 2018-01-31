@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/white"
-    app:cardElevation="4dp">
+    app:cardElevation="@dimen/card_elevation">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 tools:targetApi="17"
-                tools:text="Coming Soon" />
+                tools:text="@string/coming_soon" />
         </LinearLayout>
 
         <LinearLayout
@@ -61,8 +61,8 @@
 
             <org.edx.mobile.view.custom.IconImageViewXml
                 android:id="@+id/course_download_status_icon"
-                android:layout_width="23dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_width"
+                android:layout_height="@dimen/icon_height"
                 android:baselineAlignBottom="true"
                 android:layout_gravity="center"
                 android:layout_marginRight="@dimen/input_padding_half"
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 tools:targetApi="17"
-                tools:text="Media Download Status" />
+                tools:text="@string/media_download_status" />
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>

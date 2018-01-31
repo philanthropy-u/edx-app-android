@@ -71,7 +71,7 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
                     Long downloadTimeStamp = environment.getDatabase().getLastMediaDownloadTimeForCourse(courseData.getId());
                     String relativeTimeSpanString = getRelativeTimeStringFromNow(downloadTimeStamp);
                     setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADED, relativeTimeSpanString, null);
-                } else if (environment.getDatabase().isAnyVideoDownloadingInCourse(null, courseData.getId())) {
+                } else if (environment.getDatabase().isAnyMediaDownloadingInCourse(null, courseData.getId())) {
                     setRowStateOnDownload(holder, DownloadEntry.DownloadedState.DOWNLOADING,
                             null, new View.OnClickListener() {
                                 @Override

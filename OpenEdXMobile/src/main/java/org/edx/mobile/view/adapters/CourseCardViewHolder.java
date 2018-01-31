@@ -67,8 +67,9 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
     }
 
     public void showNoContentDownloadStatusContainer(Context context) {
-        courseDownloadStatusIcon.setImageResource(R.drawable.ic_prohibition);
-        courseDownloadStatusIcon.setPadding(5,5,5,5);
+        courseDownloadStatusIcon.setImageResource(R.drawable.ic_no_content);
+        int padding = (int) context.getResources().getDimension(R.dimen.widget_margin_half);
+        courseDownloadStatusIcon.setPadding(padding, padding, padding, padding);
         courseDownloadStatus.setText(R.string.no_downloadable_content);
         courseDownloadStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
         courseStatusUnit.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_1));
@@ -80,8 +81,9 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
 
     public void updateDownloadStatus(Context context, DownloadEntry.DownloadedState state, View.OnClickListener listener, String relativeTimeStamp) {
         if(state == null){
-            courseDownloadStatusIcon.setImageResource(R.drawable.ic_danger);
-            courseDownloadStatusIcon.setPadding(5,5,5,5);
+            courseDownloadStatusIcon.setImageResource(R.drawable.ic_notification);
+            int padding = (int) context.getResources().getDimension(R.dimen.widget_margin_half);
+            courseDownloadStatusIcon.setPadding(padding, padding, padding, padding);
             courseDownloadStatus.setText(R.string.visit_course_to_download);
             courseDownloadStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
             courseStatusUnit.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_1));

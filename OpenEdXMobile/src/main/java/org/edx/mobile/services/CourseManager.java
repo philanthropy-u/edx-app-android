@@ -43,35 +43,20 @@ public class CourseManager {
     @Nullable
     public CourseComponent getComponentById(@NonNull final String courseId,
                                             @NonNull final String componentId) {
-        CourseComponent courseComponent = null;
         try {
-            courseComponent = getCourseByCourseId(courseId);
-            if (courseComponent == null)
-                return null;
-            return courseComponent.find(new Filter<CourseComponent>() {
-                @Override
-                public boolean apply(CourseComponent courseComponent) {
-                    return componentId.equals(courseComponent.getId());
-                }
-            });
+            CourseComponent courseComponent = getCourseByCourseId(courseId);
+            if (courseComponent != null) {
+                return courseComponent.find(new Filter<CourseComponent>() {
+                    @Override
+                    public boolean apply(CourseComponent courseComponent) {
+                        return componentId.equals(courseComponent.getId());
+                    }
+                });
+            }
         } catch (Exception e) {
             logger.error(e);
         }
-        return courseComponent;
-    }
-
-    @Nullable
-    private CourseComponent getCourseByCourseIdFromCache(@NonNull final String courseId) {
-        CourseComponent component = cachedComponent.get(courseId);
-        if (component != null)
-            return component;
-        try {
-            component = courseApi.getCourseStructureFromCache(courseId);
-            cachedComponent.put(courseId, component);
-        } catch (Exception e) {
-            logger.error(e);
-        }
-        return component;
+        return null;
     }
 
 }

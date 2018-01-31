@@ -18,7 +18,7 @@ import org.edx.mobile.module.analytics.Analytics;
 import org.edx.mobile.module.db.DataCallback;
 import org.edx.mobile.module.notification.NotificationDelegate;
 import org.edx.mobile.module.prefs.PrefManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.AppStoreUtils;
 import org.edx.mobile.util.IntentFactory;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import de.greenrobot.event.EventBus;
 import roboguice.inject.InjectView;
 
-public class MyCoursesListActivity extends BaseSingleFragmentActivity implements VideoDownloadHelper.DownloadManagerCallback {
+public class MyCoursesListActivity extends BaseSingleFragmentActivity implements MediaDownloadHelper.DownloadManagerCallback {
 
     @NonNull
     @InjectView(R.id.coordinator_layout)

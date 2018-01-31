@@ -688,7 +688,7 @@ public class IDatabaseImpl extends IDatabaseBaseImpl implements IDatabase {
     }
 
     @Override
-    public Boolean isAnyVideoDownloadingInCourse(final DataCallback<Boolean> callback,
+    public Boolean isAnyMediaDownloadingInCourse(final DataCallback<Boolean> callback,
                                                  String courseId) {
         DbOperationExists op = new DbOperationExists(false, DbStructure.Table.DOWNLOADS, null,
                 DbStructure.Column.EID + "=? AND " + DbStructure.Column.USERNAME + "=? AND "

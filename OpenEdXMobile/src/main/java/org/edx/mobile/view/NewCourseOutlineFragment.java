@@ -45,7 +45,7 @@ import org.edx.mobile.module.storage.DownloadedVideoDeletedEvent;
 import org.edx.mobile.module.storage.IStorage;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.LastAccessManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.NewCourseOutlineAdapter;
 import org.edx.mobile.view.common.TaskProgressCallback;
@@ -57,7 +57,7 @@ import retrofit2.Call;
 
 public class NewCourseOutlineFragment extends BaseFragment
         implements LastAccessManager.LastAccessManagerCallback, RefreshListener,
-        VideoDownloadHelper.DownloadManagerCallback {
+        MediaDownloadHelper.DownloadManagerCallback {
     private static final int REQUEST_SHOW_COURSE_UNIT_DETAIL = 0;
     private static final int AUTOSCROLL_DELAY_MS = 500;
     private static final int SNACKBAR_SHOWTIME_MS = 5000;
@@ -86,7 +86,7 @@ public class NewCourseOutlineFragment extends BaseFragment
     private LastAccessManager lastAccessManager;
 
     @Inject
-    private VideoDownloadHelper downloadManager;
+    private MediaDownloadHelper downloadManager;
 
     @Inject
     protected IEdxEnvironment environment;
@@ -211,7 +211,7 @@ public class NewCourseOutlineFragment extends BaseFragment
                         public void download(List<CourseComponent> models) {
                             final BaseFragmentActivity activity = (BaseFragmentActivity) getActivity();
                             if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                downloadManager.downloadVideos(models, activity, NewCourseOutlineFragment.this);
+                                downloadManager.downloadMedia(models, activity, NewCourseOutlineFragment.this);
                             }
                         }
 

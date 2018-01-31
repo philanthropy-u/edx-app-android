@@ -44,7 +44,7 @@ import org.edx.mobile.module.db.impl.DatabaseFactory;
 import org.edx.mobile.player.IPlayerEventCallback;
 import org.edx.mobile.player.PlayerFragment;
 import org.edx.mobile.player.TranscriptListener;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.services.ViewPagerDownloadManager;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.MediaConsentUtils;
@@ -100,7 +100,7 @@ public class CourseUnitVideoFragment extends CourseUnitFragment
     private CourseAPI courseApi;
 
     @Inject
-    VideoDownloadHelper downloadManager;
+    MediaDownloadHelper downloadManager;
 
     @Inject
     protected IEdxEnvironment environment;

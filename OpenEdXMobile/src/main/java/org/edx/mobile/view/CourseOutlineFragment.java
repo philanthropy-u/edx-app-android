@@ -46,7 +46,7 @@ import org.edx.mobile.module.storage.DownloadedVideoDeletedEvent;
 import org.edx.mobile.module.storage.IStorage;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.LastAccessManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.CourseOutlineAdapter;
 import org.edx.mobile.view.common.TaskProcessCallback;
@@ -57,7 +57,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
-public class CourseOutlineFragment extends BaseFragment implements LastAccessManager.LastAccessManagerCallback, VideoDownloadHelper.DownloadManagerCallback {
+public class CourseOutlineFragment extends BaseFragment implements LastAccessManager.LastAccessManagerCallback, MediaDownloadHelper.DownloadManagerCallback {
 
     protected final Logger logger = new Logger(getClass().getName());
     static public String TAG = CourseOutlineFragment.class.getCanonicalName();
@@ -79,7 +79,7 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     CourseManager courseManager;
 
     @Inject
-    VideoDownloadHelper downloadManager;
+    MediaDownloadHelper downloadManager;
 
     @Inject
     protected IEdxEnvironment environment;
@@ -165,7 +165,7 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                             Long downloadTimeStamp = environment.getDatabase().getLastMediaDownloadTimeForCourse(courseData.getCourse().getId());
                             String relativeTimeSpanString = getRelativeTimeStringFromNow(downloadTimeStamp);
                             setRowStateOnDownload(DownloadEntry.DownloadedState.DOWNLOADED, relativeTimeSpanString, null);
-                        } else if (environment.getDatabase().isAnyVideoDownloadingInCourse(null, courseData.getCourse().getId())) {
+                        } else if (environment.getDatabase().isAnyMediaDownloadingInCourse(null, courseData.getCourse().getId())) {
                             setRowStateOnDownload(DownloadEntry.DownloadedState.DOWNLOADING, null,
                                     new View.OnClickListener() {
                                         @Override
@@ -180,7 +180,7 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                                         public void onClick(View downloadView) {
                                             CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
                                             if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                                downloadManager.downloadVideos(courseComponent.getDownloadableMedia(), getActivity(),
+                                                downloadManager.downloadMedia(courseComponent.getDownloadableMedia(), getActivity(),
                                                         CourseOutlineFragment.this);
                                             }
                                         }
@@ -395,8 +395,8 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                         public void download(List<CourseComponent> models) {
                             CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
                             if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                downloadManager.downloadVideos(models, getActivity(),
-                                        (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                                downloadManager.downloadMedia(models, getActivity(),
+                                        (MediaDownloadHelper.DownloadManagerCallback) getActivity());
                             }
                         }
 

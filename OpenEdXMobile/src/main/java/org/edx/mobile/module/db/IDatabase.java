@@ -422,7 +422,7 @@ public interface IDatabase {
      *
      * @return boolean flag if download is in progress
      */
-    Boolean isAnyVideoDownloadingInCourse(DataCallback<Boolean> callback, String courseId);
+    Boolean isAnyMediaDownloadingInCourse(DataCallback<Boolean> callback, String courseId);
 
     /**
      * Return true if any Video is marked as Downloading for a section in the database for logged

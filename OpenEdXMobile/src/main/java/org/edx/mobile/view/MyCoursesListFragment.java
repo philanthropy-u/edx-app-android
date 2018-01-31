@@ -37,7 +37,7 @@ import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.module.analytics.Analytics;
 import org.edx.mobile.module.prefs.LoginPrefs;
 import org.edx.mobile.services.CourseManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.MyCoursesAdapter;
 
@@ -63,7 +63,7 @@ public class MyCoursesListFragment extends BaseFragment
     CourseManager courseManager;
 
     @Inject
-    VideoDownloadHelper downloadManager;
+    MediaDownloadHelper downloadManager;
     @Inject
     private IEdxEnvironment environment;
 
@@ -99,7 +99,7 @@ public class MyCoursesListFragment extends BaseFragment
             public void download(List<CourseComponent> models) {
                 MyCoursesListActivity activity = (MyCoursesListActivity) getActivity();
                 if (NetworkUtil.verifyDownloadPossible(activity)) {
-                    downloadManager.downloadVideos(models, activity, activity);
+                    downloadManager.downloadMedia(models, activity, activity);
                 }
             }
 
