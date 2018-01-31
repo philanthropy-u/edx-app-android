@@ -445,4 +445,11 @@ public class Router {
             showSplashScreen(activity);
         }
     }
+
+    public void stopAudioServiceIfRunning(Context context)
+    {
+        Intent audioServiceIntent = new Intent(context , AudioMediaService.class);
+        audioServiceIntent.setAction(AudioMediaService.CANCEL_INTENT);
+        context.startService(audioServiceIntent);
+    }
 }

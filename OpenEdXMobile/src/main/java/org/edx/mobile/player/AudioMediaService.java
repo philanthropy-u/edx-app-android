@@ -76,7 +76,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 case START_SERVICE:{
                     //Stop the notification if already shown
                     if(isRunningForeground){
-                        stopForegroundService(true);
+                        stopForegroundService();
                     }
                     isServiceCancelled = false;
                     break;
@@ -98,13 +98,17 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
                 case CANCEL_INTENT:
                 {
-                    resetAllPlayers();
-                    releaseAllPlayers();
-                    currentPlayer = null;
-                    connectedPlayers.clear();
-                    isServiceCancelled = true;
-                    stopForegroundService(true);
-                    stopSelf();
+                    if(!isBound){
+                        resetAllPlayers();
+                        releaseAllPlayers();
+                        connectedPlayers.clear();
+                        resetAndReleaseCurrentPlayer();
+                        isServiceCancelled = true;
+                        stopForegroundService();
+                        stopSelf();
+                    }else{
+                        stopForegroundService();
+                    }
                     break;
                 }
                 case DELETE_INTENT:
@@ -146,7 +150,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
     /**This will create a notification in notification bar with current music play state**/
     public void startForegroundService()
     {
-        if(currentPlayer != null && !isServiceCancelled){
+        if(currentPlayer != null && !isServiceCancelled ){
             currentPlayer.setPlayerListener(this);
             initializeCustomNotification();
             startForeground(NOTIFICATION_ID,notification);
@@ -154,21 +158,22 @@ public class AudioMediaService extends Service implements IPlayerListener{
         }else{
             resetAllPlayers();
             releaseAllPlayers();
-            currentPlayer = null;
+            resetAndReleaseCurrentPlayer();
+
             stopSelf();
         }
     }
     /**This will cancel/hide the notification in notification bar**/
-    public void stopForegroundService(boolean shouldRemove)
+    public void stopForegroundService()
     {
-        if(currentPlayer != null){
-            currentPlayer.setPlayerListener(null);
-            if(!currentPlayer.isReset())
-                currentPlayer.reset();
-            currentPlayer.release();
-            currentPlayer = null;
-        }
-        stopForeground(shouldRemove);
+//        if(currentPlayer != null){
+//            currentPlayer.setPlayerListener(null);
+//            if(!currentPlayer.isReset())
+//                currentPlayer.reset();
+//            currentPlayer.release();
+//            currentPlayer = null;
+//        }
+        stopForeground(true);
         isNotificationShowing = false;
         isRunningForeground = false;
     }
@@ -201,13 +206,13 @@ public class AudioMediaService extends Service implements IPlayerListener{
     private void handlePauseAction()
     {
         showPauseNotification();
-        currentPlayer.pause();
         try {
             if (currentPlayer != null && currentPlayer.isPlaying()) {
                 int pos = currentPlayer.getCurrentPosition();
                 if (pos > 0) {
                     saveCurrentPlaybackPosition(pos);
                 }
+                currentPlayer.pause();
             }
         } catch (Exception e) {
             logger.error(e);
@@ -497,7 +502,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
         releaseAllPlayers();
         currentPlayer = null;
         connectedPlayers.clear();
-        stopForegroundService(true);
+        stopForegroundService();
         stopSelf();
     }
     /**
@@ -506,7 +511,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
     private void handleDeleteCommandBound()
     {
-        stopForegroundService(true);
+        stopForegroundService();
         isNotificationShowing = false;
     }
 
@@ -558,7 +563,17 @@ public class AudioMediaService extends Service implements IPlayerListener{
         } catch (Exception ex) {
             logger.error(ex);
         }
+    }
 
+    private void resetAndReleaseCurrentPlayer()
+    {
+        if(currentPlayer!= null){
+            if(!currentPlayer.isReset()){
+                currentPlayer.reset();
+            }
+            currentPlayer.release();
+            currentPlayer = null;
+        }
     }
 
 }

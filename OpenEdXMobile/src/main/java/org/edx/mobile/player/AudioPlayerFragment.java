@@ -351,14 +351,19 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         super.onResume();
         if (getUserVisibleHint()) {
             handleOnResume();
+            if(audioMediaService!= null){
+                audioMediaService.stopForegroundService();
+            }
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (getUserVisibleHint()) {
+        if (!getUserVisibleHint()) {
             handleOnPause();
+        }else{
+            checkFragmentStatusAndStartService();
         }
     }
 
@@ -428,10 +433,10 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
 
         setTouchExploreChangeListener(null);
 
-        if (audioManager != null) {
+        if (audioManager != null && !getUserVisibleHint()) {
             audioManager.abandonAudioFocus(this);
         }
-        if (player != null) {
+        if (player != null && !getUserVisibleHint()) {
             handler.removeMessages(MSG_TYPE_TICK);
             freezePlayer();
         }
@@ -441,9 +446,11 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
     public void onDestroy() {
         super.onDestroy();
         uiHelper.onDestroy();
-        checkFragmentStatusAndStartService();
         if(player != null && player.isPlaying()){
             lastPlaybackTime = player.getCurrentPosition();
+        }
+        if(isServiceBound && serviceConnection!= null && getUserVisibleHint()){
+            getContext().unbindService(serviceConnection);
         }
         if (!stateSaved) {
             if(player!= null){
@@ -453,6 +460,9 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                 // release the player instance
                 player.release();
                 player = null;
+                if(audioMediaService!= null){
+                    audioMediaService.stopForegroundService();
+                }
             }
 
         }
@@ -483,7 +493,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
     public void onSaveInstanceState(Bundle outState) {
         logger.debug("Saving state ...");
         stateSaved = true;
-        if (player != null) {
+        if (player != null && !getUserVisibleHint()) {
             freezePlayer();
             outState.putSerializable(KEY_PLAYER, player);
         }
