@@ -30,7 +30,7 @@ import java.util.Map;
  *
  */
 @Singleton
-public class VideoDownloadHelper {
+public class MediaDownloadHelper {
     public interface DownloadManagerCallback {
         void onDownloadStarted(Long result);
 
@@ -54,8 +54,8 @@ public class VideoDownloadHelper {
     AnalyticsRegistry analyticsRegistry;
 
 
-    public void downloadVideos(final List<CourseComponent> model, final FragmentActivity activity,
-                               final DownloadManagerCallback callback) {
+    public void downloadMedia(final List<CourseComponent> model, final FragmentActivity activity,
+                              final DownloadManagerCallback callback) {
         if (model == null || model.isEmpty()) {
             return;
         }

@@ -252,4 +252,5 @@
     <dimen name="audio_not_available_icon_height">140dp</dimen>
     <dimen name="audio_not_available_text_horizontal_margin">60dp</dimen>
     <dimen name="audio_not_available_text_vertical_margin">10dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
 </resources>

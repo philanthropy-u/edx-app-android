@@ -1,15 +1,10 @@
 package org.edx.mobile.view;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +21,8 @@ import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.module.analytics.Analytics;
-import org.edx.mobile.player.AudioMediaService;
 import org.edx.mobile.services.LastAccessManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.services.ViewPagerDownloadManager;
 import org.edx.mobile.view.adapters.CourseUnitPagerAdapter;
 import org.edx.mobile.view.common.PageViewStateCallback;
@@ -49,7 +43,7 @@ import roboguice.inject.InjectView;
  *
  */
 public class CourseUnitNavigationActivity extends CourseBaseActivity implements
-        CourseUnitVideoFragment.HasComponent, VideoDownloadHelper.DownloadManagerCallback {
+        CourseUnitVideoFragment.HasComponent, MediaDownloadHelper.DownloadManagerCallback {
 
     protected Logger logger = new Logger(getClass().getSimpleName());
     @Inject
