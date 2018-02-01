@@ -21,7 +21,6 @@
             android:id="@+id/title"
             style="@style/whats_new_semibold_text"
             android:text="@string/course_on_web_title"
-            tools:text="@string/course_on_web_title"
             android:textSize="@dimen/custom_x_small"
             android:letterSpacing="0.04"
             android:lineSpacingExtra="@dimen/title_text_line_spacing"
@@ -49,8 +48,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/edx_x_small"
                 android:gravity="center_horizontal"
-                android:text="@string/course_on_web_description"
-                tools:text="@string/course_on_web_description" />
+                android:text="@string/course_on_web_description"/>
 
         </ScrollView>
 
@@ -64,7 +62,7 @@
             android:layout_marginBottom="@dimen/widget_margin_large"
             android:layout_marginRight="@dimen/widget_margin_large"
             android:layout_marginLeft="@dimen/widget_margin_large"
-            android:text="@string/leave_app"
+            android:text="@string/go_to_browser"
             android:textAllCaps="true"
             android:textColor="@color/edx_brand_button_text"
             android:textSize="@dimen/edx_x_small" />
