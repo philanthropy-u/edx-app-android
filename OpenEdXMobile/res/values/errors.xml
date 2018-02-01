@@ -86,5 +86,7 @@
 
     <!-- Error dialog message shown when the user try to register in app with un-supported version -->
     <string name="app_version_unsupported_register_msg">Your version of the app is no longer supported. Update to the latest version to register.</string>
+    <!-- Title of prompt indicating issue loading a audio -->
+    <string name="network_error_header_audio">Problem loading audio</string>
 
 </resources>

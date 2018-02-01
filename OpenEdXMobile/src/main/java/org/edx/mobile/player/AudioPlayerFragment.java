@@ -351,14 +351,19 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         super.onResume();
         if (getUserVisibleHint()) {
             handleOnResume();
+            if(audioMediaService!= null){
+                audioMediaService.stopForegroundService();
+            }
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (getUserVisibleHint()) {
+        if (!getUserVisibleHint()) {
             handleOnPause();
+        }else if(isAudioObtainable){
+            checkFragmentStatusAndStartService();
         }
     }
 
@@ -428,10 +433,10 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
 
         setTouchExploreChangeListener(null);
 
-        if (audioManager != null) {
+        if (audioManager != null && !getUserVisibleHint()) {
             audioManager.abandonAudioFocus(this);
         }
-        if (player != null) {
+        if (player != null && !getUserVisibleHint()) {
             handler.removeMessages(MSG_TYPE_TICK);
             freezePlayer();
         }
@@ -441,13 +446,26 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
     public void onDestroy() {
         super.onDestroy();
         uiHelper.onDestroy();
-        checkFragmentStatusAndStartService();
         if(player != null && player.isPlaying()){
             lastPlaybackTime = player.getCurrentPosition();
         }
+        if(isServiceBound && serviceConnection!= null){
+            getContext().unbindService(serviceConnection);
+        }
         if (!stateSaved) {
-            removeSubtitleCallBack();
-            logger.debug("player detached, reset and released");
+            if(player!= null){
+                removeSubtitleCallBack();
+                logger.debug("player detached, reset and released");
+                if(!player.isReset())
+                    player.reset();
+                // release the player instance
+                player.release();
+                player = null;
+                if(audioMediaService!= null){
+                    audioMediaService.stopForegroundService();
+                }
+            }
+
         }
     }
 
@@ -476,7 +494,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
     public void onSaveInstanceState(Bundle outState) {
         logger.debug("Saving state ...");
         stateSaved = true;
-        if (player != null) {
+        if (player != null && !getUserVisibleHint()) {
             freezePlayer();
             outState.putSerializable(KEY_PLAYER, player);
         }
@@ -696,6 +714,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                             showAudioNotAvailable(AudioNotPlayMessageType.IS_AUDIO_MESSAGE_DISPLAYED);
                         } else {
                             View errorView = getView().findViewById(R.id.panel_network_error);
+                            ((TextView)errorView.findViewById(R.id.error_header)).setText(getString(R.string.network_error_header_audio));
                             errorView.setVisibility(View.VISIBLE);
                         }
 
@@ -1482,8 +1501,6 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         }
         return null;
     }
-
-    //
 
     /**
      * This function is used to show Dialog fragment of

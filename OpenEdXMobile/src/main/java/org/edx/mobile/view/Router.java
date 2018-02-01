@@ -438,11 +438,16 @@ public class Router {
     public void manageAudioServiceRouting(boolean isTaskRoot, Activity activity)
     {
         //Stop Any Audio service if running
-        Intent audioServiceIntent = new Intent(activity , AudioMediaService.class);
-        audioServiceIntent.setAction(AudioMediaService.CANCEL_INTENT);
-        activity.startService(audioServiceIntent);
+        stopAudioServiceIfRunning(activity);
         if (isTaskRoot) {
             showSplashScreen(activity);
         }
+    }
+
+    public void stopAudioServiceIfRunning(Context context)
+    {
+        Intent audioServiceIntent = new Intent(context , AudioMediaService.class);
+        audioServiceIntent.setAction(AudioMediaService.CANCEL_INTENT);
+        context.startService(audioServiceIntent);
     }
 }

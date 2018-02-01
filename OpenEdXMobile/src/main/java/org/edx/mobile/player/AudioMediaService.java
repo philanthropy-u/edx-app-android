@@ -8,26 +8,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 import org.edx.mobile.R;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.module.db.impl.DatabaseFactory;
-import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.view.CourseUnitNavigationActivity;
 import org.edx.mobile.view.Router;
-
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Created by arslan on 1/9/18.
@@ -76,7 +70,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 case START_SERVICE:{
                     //Stop the notification if already shown
                     if(isRunningForeground){
-                        stopForegroundService(true);
+                        stopForegroundService();
                     }
                     isServiceCancelled = false;
                     break;
@@ -98,13 +92,15 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
                 case CANCEL_INTENT:
                 {
-                    resetAllPlayers();
-                    releaseAllPlayers();
-                    currentPlayer = null;
-                    connectedPlayers.clear();
-                    isServiceCancelled = true;
-                    stopForegroundService(true);
-                    stopSelf();
+                    stopForegroundService();
+                    if(!isBound){
+                        resetAllPlayers();
+                        releaseAllPlayers();
+                        connectedPlayers.clear();
+                        resetAndReleaseCurrentPlayer();
+                        isServiceCancelled = true;
+                        stopSelf();
+                    }
                     break;
                 }
                 case DELETE_INTENT:
@@ -146,7 +142,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
     /**This will create a notification in notification bar with current music play state**/
     public void startForegroundService()
     {
-        if(currentPlayer != null && !isServiceCancelled){
+        if(currentPlayer != null && !isServiceCancelled ){
             currentPlayer.setPlayerListener(this);
             initializeCustomNotification();
             startForeground(NOTIFICATION_ID,notification);
@@ -154,20 +150,15 @@ public class AudioMediaService extends Service implements IPlayerListener{
         }else{
             resetAllPlayers();
             releaseAllPlayers();
-            currentPlayer = null;
+            resetAndReleaseCurrentPlayer();
+
             stopSelf();
         }
     }
     /**This will cancel/hide the notification in notification bar**/
-    public void stopForegroundService(boolean shouldRemove)
+    public void stopForegroundService()
     {
-        if(currentPlayer != null){
-            currentPlayer.setPlayerListener(null);
-            if(!currentPlayer.isReset())
-                currentPlayer.reset();
-            currentPlayer = null;
-        }
-        stopForeground(shouldRemove);
+        stopForeground(true);
         isNotificationShowing = false;
         isRunningForeground = false;
     }
@@ -200,13 +191,13 @@ public class AudioMediaService extends Service implements IPlayerListener{
     private void handlePauseAction()
     {
         showPauseNotification();
-        currentPlayer.pause();
         try {
             if (currentPlayer != null && currentPlayer.isPlaying()) {
                 int pos = currentPlayer.getCurrentPosition();
                 if (pos > 0) {
                     saveCurrentPlaybackPosition(pos);
                 }
+                currentPlayer.pause();
             }
         } catch (Exception e) {
             logger.error(e);
@@ -344,7 +335,8 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
     @Override
     public void onPrepared() {
-
+        if(currentPlayer!= null)
+            currentPlayer.unfreeze();
     }
 
     @Override
@@ -391,7 +383,8 @@ public class AudioMediaService extends Service implements IPlayerListener{
             if(player!= null && currentPlayer == player){
                 return (Player) currentPlayer;
             }else{
-                currentPlayer.reset();
+                if(!currentPlayer.isReset())
+                    currentPlayer.reset();
                 currentPlayer.release();
                 currentPlayer = null;
                 connectedPlayers.remove(tag);
@@ -495,7 +488,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
         releaseAllPlayers();
         currentPlayer = null;
         connectedPlayers.clear();
-        stopForegroundService(true);
+        stopForegroundService();
         stopSelf();
     }
     /**
@@ -504,7 +497,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
     private void handleDeleteCommandBound()
     {
-        stopForegroundService(true);
+        stopForegroundService();
         isNotificationShowing = false;
     }
 
@@ -556,7 +549,17 @@ public class AudioMediaService extends Service implements IPlayerListener{
         } catch (Exception ex) {
             logger.error(ex);
         }
+    }
 
+    private void resetAndReleaseCurrentPlayer()
+    {
+        if(currentPlayer!= null){
+            if(!currentPlayer.isReset()){
+                currentPlayer.reset();
+            }
+            currentPlayer.release();
+            currentPlayer = null;
+        }
     }
 
 }
