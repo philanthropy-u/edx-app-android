@@ -362,7 +362,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         super.onPause();
         if (!getUserVisibleHint()) {
             handleOnPause();
-        }else{
+        }else if(isAudioObtainable){
             checkFragmentStatusAndStartService();
         }
     }
@@ -449,7 +449,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         if(player != null && player.isPlaying()){
             lastPlaybackTime = player.getCurrentPosition();
         }
-        if(isServiceBound && serviceConnection!= null && getUserVisibleHint()){
+        if(isServiceBound && serviceConnection!= null){
             getContext().unbindService(serviceConnection);
         }
         if (!stateSaved) {
@@ -1500,8 +1500,6 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
         }
         return null;
     }
-
-    //
 
     /**
      * This function is used to show Dialog fragment of

@@ -8,26 +8,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 import org.edx.mobile.R;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.module.db.impl.DatabaseFactory;
-import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.view.CourseUnitNavigationActivity;
 import org.edx.mobile.view.Router;
-
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Created by arslan on 1/9/18.
@@ -166,13 +160,6 @@ public class AudioMediaService extends Service implements IPlayerListener{
     /**This will cancel/hide the notification in notification bar**/
     public void stopForegroundService()
     {
-//        if(currentPlayer != null){
-//            currentPlayer.setPlayerListener(null);
-//            if(!currentPlayer.isReset())
-//                currentPlayer.reset();
-//            currentPlayer.release();
-//            currentPlayer = null;
-//        }
         stopForeground(true);
         isNotificationShowing = false;
         isRunningForeground = false;
@@ -350,7 +337,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
     @Override
     public void onPrepared() {
-
+        if(currentPlayer!= null)currentPlayer.unfreeze();
     }
 
     @Override
