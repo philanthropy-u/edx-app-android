@@ -92,16 +92,14 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
                 case CANCEL_INTENT:
                 {
+                    stopForegroundService();
                     if(!isBound){
                         resetAllPlayers();
                         releaseAllPlayers();
                         connectedPlayers.clear();
                         resetAndReleaseCurrentPlayer();
                         isServiceCancelled = true;
-                        stopForegroundService();
                         stopSelf();
-                    }else{
-                        stopForegroundService();
                     }
                     break;
                 }
@@ -337,7 +335,8 @@ public class AudioMediaService extends Service implements IPlayerListener{
 
     @Override
     public void onPrepared() {
-        if(currentPlayer!= null)currentPlayer.unfreeze();
+        if(currentPlayer!= null)
+            currentPlayer.unfreeze();
     }
 
     @Override

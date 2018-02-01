@@ -456,7 +456,8 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
             if(player!= null){
                 removeSubtitleCallBack();
                 logger.debug("player detached, reset and released");
-                if(!player.isReset())player.reset();
+                if(!player.isReset())
+                    player.reset();
                 // release the player instance
                 player.release();
                 player = null;
