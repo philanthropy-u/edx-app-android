@@ -355,4 +355,10 @@ public class CourseUnitNavigationActivity extends CourseBaseActivity implements
         environment.getRouter().manageAudioServiceRouting(isTaskRoot() , CourseUnitNavigationActivity.this);
         super.onBackPressed();
     }
+
+    @Override
+    protected void onDestroy() {
+        environment.getRouter().stopAudioServiceIfRunning(CourseUnitNavigationActivity.this);
+        super.onDestroy();
+    }
 }
