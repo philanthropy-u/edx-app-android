@@ -28,7 +28,7 @@ public class CourseMediaStatusRefreshService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         final IEdxEnvironment environment = MainApplication.getEnvironment(this);
 
-        environment.getDatabase().getAllVideos(new DataCallback<List<DownloadEntry>>() {
+        environment.getDatabase().getAllMedia(new DataCallback<List<DownloadEntry>>() {
 
             @Override
             public void onResult(List<DownloadEntry> result) {

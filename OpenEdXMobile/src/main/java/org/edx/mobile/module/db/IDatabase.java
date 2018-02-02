@@ -370,7 +370,7 @@ public interface IDatabase {
      *
      * @return
      */
-    List<DownloadEntry> getAllVideos(DataCallback<List<DownloadEntry>> DataCallback);
+    List<DownloadEntry> getAllMedia(DataCallback<List<DownloadEntry>> DataCallback);
 
     /**
      * Removes all records of given username from the database.

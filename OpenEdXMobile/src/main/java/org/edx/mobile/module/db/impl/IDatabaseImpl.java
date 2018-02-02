@@ -571,7 +571,7 @@ public class IDatabaseImpl extends IDatabaseBaseImpl implements IDatabase {
     }
 
     @Override
-    public List<DownloadEntry> getAllVideos(final DataCallback<List<DownloadEntry>> callback) {
+    public List<DownloadEntry> getAllMedia(final DataCallback<List<DownloadEntry>> callback) {
         DbOperationGetDownloadEntries op = new DbOperationGetDownloadEntries(false, DbStructure.Table.DOWNLOADS, null,
                 DbStructure.Column.USERNAME + "=?", new String[]{username()}, null);
         op.setCallback(callback);
