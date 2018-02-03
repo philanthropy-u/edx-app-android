@@ -95,7 +95,7 @@ public class DbTests extends BaseTestCase {
 
     @Test
     public void testPrintTable() throws Exception {
-        db.getAllVideos("shahid", new DataCallback<List<DownloadEntry>>() {
+        db.getAllMedia(new DataCallback<List<DownloadEntry>>() {
 
             @Override
             public void onResult(List<DownloadEntry> result) {
@@ -1378,7 +1378,7 @@ public class DbTests extends BaseTestCase {
     @Test
     public void testgetAllVideos() throws Exception {
         db.clearDataByUser(username);
-        db.getAllVideos(username, new DataCallback<List<DownloadEntry>>() {
+        db.getAllMedia(new DataCallback<List<DownloadEntry>>() {
 
             @Override
             public void onResult(List<DownloadEntry> result) {
@@ -1396,14 +1396,14 @@ public class DbTests extends BaseTestCase {
         lock();
         DownloadEntry de=getDummyVideoModel();
         db.addMediaData(de, null);
-        db.getAllVideos(username, new DataCallback<List<DownloadEntry>>() {
+        db.getAllMedia(new DataCallback<List<DownloadEntry>>() {
 
             @Override
             public void onResult(List<DownloadEntry> result) {
                 assertNotNull(result);
                 assertTrue(result.size() == 1);
                 // assertFalse("something is downloading", result);
-                print( "result for getAllVideos :" + result.toString());
+                print( "result for getAllMedia :" + result.toString());
                 unlock();
             }
 

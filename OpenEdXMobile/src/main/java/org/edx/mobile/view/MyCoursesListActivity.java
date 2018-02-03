@@ -18,6 +18,7 @@ import org.edx.mobile.module.analytics.Analytics;
 import org.edx.mobile.module.db.DataCallback;
 import org.edx.mobile.module.notification.NotificationDelegate;
 import org.edx.mobile.module.prefs.PrefManager;
+import org.edx.mobile.services.CourseMediaStatusRefreshService;
 import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.AppStoreUtils;
@@ -115,6 +116,11 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity implements
     protected void onResume() {
         super.onResume();
         notificationDelegate.checkAppUpgrade();
+        updateDownloadedMediaStatus();
+    }
+
+    private void updateDownloadedMediaStatus() {
+        startService(new Intent(this.getBaseContext(), CourseMediaStatusRefreshService.class));
     }
 
     public void updateDatabaseAfterDownload(ArrayList<EnrolledCoursesResponse> list) {

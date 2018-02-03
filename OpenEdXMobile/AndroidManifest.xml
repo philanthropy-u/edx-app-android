@@ -301,6 +301,9 @@
 
         <service android:name="org.edx.mobile.services.DownloadSpeedService" />
         <service android:name=".player.AudioMediaService" />
+        <service
+            android:name=".services.CourseMediaStatusRefreshService"
+            android:exported="false"/>
     </application>
 
 </manifest>
