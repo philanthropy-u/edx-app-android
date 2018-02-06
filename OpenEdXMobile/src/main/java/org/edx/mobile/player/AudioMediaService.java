@@ -48,6 +48,8 @@ public class AudioMediaService extends Service implements IPlayerListener{
     public static final String PAUSE_MEDIA = "PAUSE_MEDIA";
     public static final String DELETE_INTENT = "DELETE_INTENT";
     public static final String CANCEL_INTENT = "CANCEL";
+    public static final String FORCE_CLOSE = "CLOSE";
+
     public static int NOTIFICATION_ID = 101;
     IPlayer currentPlayer;
     HashMap<String , Player> connectedPlayers= new HashMap<>();
@@ -94,12 +96,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 {
                     stopForegroundService();
                     if(!isBound){
-                        resetAllPlayers();
-                        releaseAllPlayers();
-                        connectedPlayers.clear();
-                        resetAndReleaseCurrentPlayer();
-                        isServiceCancelled = true;
-                        stopSelf();
+                        resetAndStopService();
                     }
                     break;
                 }
@@ -114,6 +111,13 @@ public class AudioMediaService extends Service implements IPlayerListener{
                     }
                     break;
                 }
+                case FORCE_CLOSE:
+                {
+                    stopForegroundService();
+                    resetAndStopService();
+                    break;
+                }
+
                 default:
                     break;
             }
@@ -562,4 +566,14 @@ public class AudioMediaService extends Service implements IPlayerListener{
         }
     }
 
+    private void resetAndStopService()
+    {
+        resetAllPlayers();
+        releaseAllPlayers();
+        connectedPlayers.clear();
+        resetAndReleaseCurrentPlayer();
+        isServiceCancelled = true;
+        stopSelf();
+
+    }
 }

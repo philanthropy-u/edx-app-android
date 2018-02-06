@@ -447,7 +447,7 @@ public class Router {
     public void stopAudioServiceIfRunning(Context context)
     {
         Intent audioServiceIntent = new Intent(context , AudioMediaService.class);
-        audioServiceIntent.setAction(AudioMediaService.CANCEL_INTENT);
+        audioServiceIntent.setAction(AudioMediaService.FORCE_CLOSE);
         context.startService(audioServiceIntent);
     }
 }
