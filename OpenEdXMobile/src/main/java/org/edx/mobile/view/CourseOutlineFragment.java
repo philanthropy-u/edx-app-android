@@ -20,6 +20,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -105,6 +107,11 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
 
         View view = inflater.inflate(R.layout.fragment_course_outline, container, false);
         listView = (ListView) view.findViewById(R.id.outline_list);
+
+        View footer = new View(getContext());
+        footer.setMinimumHeight((int) getContext().getResources().getDimension(R.dimen.banner_height));
+        footer.setMinimumWidth(10); // random number > 0
+        listView.addFooterView(footer);
 
         courseStatusUnit = (LinearLayout) view.findViewById(R.id.status_layout);
         courseDownloadStatus = (TextView) view.findViewById(R.id.course_download_status);
@@ -222,14 +229,13 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                     View v = listView.getChildAt(totalItemCount - 1);
                     int offset = (v == null) ? 0 : v.getTop();
                     if (offset == 0) {
-                        // reached the bottom: visible header and footer
-                        Log.i(TAG, "bottom reached!");
-                        courseStatusUnit.setVisibility(View.VISIBLE);
+                        // reached the bottom: show footer
+                        courseStatusUnit.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
                     }
                 } else if (totalItemCount - visibleItemCount > firstVisibleItem) {
-                    // on scrolling
-                    courseStatusUnit.setVisibility(View.GONE);
-                    Log.i(TAG, "on scroll");
+                    // on scrolling: hide footer
+                    courseStatusUnit.animate().translationY(courseStatusUnit.getMeasuredHeight() * 2)
+                            .setInterpolator(new AccelerateInterpolator(1));
                 }
             }
         };
