@@ -106,6 +106,11 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
         View view = inflater.inflate(R.layout.fragment_course_outline, container, false);
         listView = (ListView) view.findViewById(R.id.outline_list);
 
+        View footer = new View(getContext());
+        footer.setMinimumHeight((int) getContext().getResources().getDimension(R.dimen.banner_height));
+        footer.setMinimumWidth(10); // random number > 0
+        listView.addFooterView(footer);
+
         courseStatusUnit = (LinearLayout) view.findViewById(R.id.status_layout);
         courseDownloadStatus = (TextView) view.findViewById(R.id.course_download_status);
         courseDownloadStatusIcon = (IconImageViewXml) view.findViewById(R.id.course_download_status_icon);
