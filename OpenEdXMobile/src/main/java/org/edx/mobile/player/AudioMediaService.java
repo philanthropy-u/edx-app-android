@@ -119,12 +119,12 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 case FORCE_CLOSE:
                 {
                     stopForegroundService();
-                        resetAllPlayers();
-                        releaseAllPlayers();
-                        connectedPlayers.clear();
-                        resetAndReleaseCurrentPlayer();
-                        isServiceCancelled = true;
-                        stopSelf();
+                    resetAllPlayers();
+                    releaseAllPlayers();
+                    connectedPlayers.clear();
+                    resetAndReleaseCurrentPlayer();
+                    isServiceCancelled = true;
+                    stopSelf();
                     break;
                 }
 
