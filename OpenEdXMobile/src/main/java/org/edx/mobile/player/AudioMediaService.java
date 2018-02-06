@@ -96,12 +96,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 {
                     stopForegroundService();
                     if(!isBound){
-                        resetAllPlayers();
-                        releaseAllPlayers();
-                        connectedPlayers.clear();
-                        resetAndReleaseCurrentPlayer();
-                        isServiceCancelled = true;
-                        stopSelf();
+                        resetAndStopService();
                     }
                     break;
                 }
@@ -119,12 +114,7 @@ public class AudioMediaService extends Service implements IPlayerListener{
                 case FORCE_CLOSE:
                 {
                     stopForegroundService();
-                    resetAllPlayers();
-                    releaseAllPlayers();
-                    connectedPlayers.clear();
-                    resetAndReleaseCurrentPlayer();
-                    isServiceCancelled = true;
-                    stopSelf();
+                    resetAndStopService();
                     break;
                 }
 
@@ -576,4 +566,14 @@ public class AudioMediaService extends Service implements IPlayerListener{
         }
     }
 
+    private void resetAndStopService()
+    {
+        resetAllPlayers();
+        releaseAllPlayers();
+        connectedPlayers.clear();
+        resetAndReleaseCurrentPlayer();
+        isServiceCancelled = true;
+        stopSelf();
+
+    }
 }
