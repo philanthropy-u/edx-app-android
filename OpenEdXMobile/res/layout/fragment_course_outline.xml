@@ -23,8 +23,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/philu_bottom_bar_blue_bg"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
 
         <org.edx.mobile.view.custom.IconImageViewXml
