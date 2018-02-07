@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.model.course.AudioBlockModel;
 import org.edx.mobile.model.course.BlockType;
@@ -12,6 +13,7 @@ import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.DiscussionBlockModel;
 import org.edx.mobile.model.course.HtmlBlockModel;
 import org.edx.mobile.model.course.VideoBlockModel;
+import org.edx.mobile.model.db.DownloadEntry;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.view.CourseUnitAudioFragment;
 import org.edx.mobile.view.CourseUnitDiscussionFragment;
@@ -25,18 +27,19 @@ import org.edx.mobile.view.CourseUnitWebViewFragment;
 import java.util.List;
 
 public class CourseUnitPagerAdapter extends FragmentStatePagerAdapter {
-    private Config config;
+
+    private final IEdxEnvironment environment;
     private List<CourseComponent> unitList;
     private EnrolledCoursesResponse courseData;
     private CourseUnitFragment.HasComponent callback;
 
     public CourseUnitPagerAdapter(FragmentManager manager,
-                                  Config config,
+                                  IEdxEnvironment environment,
                                   List<CourseComponent> unitList,
                                   EnrolledCoursesResponse courseData,
                                   CourseUnitFragment.HasComponent callback) {
         super(manager);
-        this.config = config;
+        this.environment = environment;
         this.unitList = unitList;
         this.courseData = courseData;
         this.callback = callback;
@@ -57,6 +60,10 @@ public class CourseUnitPagerAdapter extends FragmentStatePagerAdapter {
         return (unit instanceof VideoBlockModel && ((VideoBlockModel) unit).getData().encodedVideos.getPreferredVideoInfo() != null);
     }
 
+    private boolean isYoutubeVideo(CourseComponent unit) {
+        return unit instanceof VideoBlockModel && ((VideoBlockModel) unit).getData().encodedVideos.getYoutubeVideoInfo() != null;
+    }
+
     @Override
     public Fragment getItem(int pos) {
         CourseComponent unit = getUnit(pos);
@@ -64,11 +71,11 @@ public class CourseUnitPagerAdapter extends FragmentStatePagerAdapter {
         //FIXME - for the video, let's ignore studentViewMultiDevice for now
         if (unit instanceof AudioBlockModel) {
             unitFragment = CourseUnitAudioFragment.newInstance((AudioBlockModel) unit, (pos < unitList.size()), (pos > 0));
+        } else if (isYoutubeVideo(unit)&& !isDownloaded(unit)) {
+            unitFragment = CourseUnitOnlyOnYoutubeFragment.newInstance(unit, environment.getConfig().getYoutubeApiKey());
         } else if (isCourseUnitVideo(unit)) {
             unitFragment = CourseUnitVideoFragment.newInstance((VideoBlockModel) unit, (pos < unitList.size()), (pos > 0));
-        } else if (unit instanceof VideoBlockModel && ((VideoBlockModel) unit).getData().encodedVideos.getYoutubeVideoInfo() != null) {
-            unitFragment = CourseUnitOnlyOnYoutubeFragment.newInstance(unit, config.getYoutubeApiKey());
-        } else if (config.isDiscussionsEnabled() && unit instanceof DiscussionBlockModel) {
+        } else if (environment.getConfig().isDiscussionsEnabled() && unit instanceof DiscussionBlockModel) {
             unitFragment = CourseUnitDiscussionFragment.newInstance(unit, courseData);
         } else if (!unit.isMultiDevice()) {
             unitFragment = CourseUnitMobileNotSupportedFragment.newInstance(unit);
@@ -90,6 +97,11 @@ public class CourseUnitPagerAdapter extends FragmentStatePagerAdapter {
         unitFragment.setHasComponentCallback(callback);
 
         return unitFragment;
+    }
+
+    private boolean isDownloaded(CourseComponent unit) {
+        DownloadEntry downloadEntry = ((VideoBlockModel) unit).getDownloadEntry(environment.getStorage());
+        return downloadEntry != null && environment.getDownloadManager().isDownloadComplete(downloadEntry.getDmId());
     }
 
     @Override

@@ -87,7 +87,7 @@ public class CourseUnitNavigationActivity extends CourseBaseActivity implements
 
         pager = (DisableableViewPager) findViewById(R.id.pager);
         pagerAdapter = new CourseUnitPagerAdapter(getSupportFragmentManager(),
-                environment.getConfig(), unitList, courseData, this);
+                environment, unitList, courseData, this);
         pager.setAdapter(pagerAdapter);
 
 
