@@ -98,7 +98,7 @@
     <!-- Button text to show user Settings screen -->
     <string name="action_settings">Settings</string>
     <!-- Button text to download unit content -->
-    <string name="action_download">Download</string>
+    <string name="action_download" tools:ignore="MissingTranslation">Download</string>
     <!-- Button text to show user current downloads screen -->
     <string name="label_current_downloads" tools:ignore="MissingTranslation">View current downloads</string>
     <!-- Content description for edit profile button -->
@@ -379,7 +379,7 @@
     <string name="assessment_only_on_youtube">This video can only be played on YouTube.</string>
     <!-- Label for button to open on youtube -->
     <string name="assessment_open_on_youtube">View video on YouTube</string>
-    <string name="subtitle_not_available_text">Subtitles not available for this audio.</string>
+    <string name="subtitle_not_available_text" tools:ignore="MissingTranslation">Subtitles not available for this audio.</string>
 
     <!-- Video List -->
     <!-- Title of video download screen -->
@@ -406,7 +406,7 @@
     <!-- Error shown when video download fails -->
     <string name="msg_video_not_available">This video is currently unavailable.\nCheck back again later.</string>
     <!-- Error shown when audio download fails -->
-    <string name="msg_audio_not_available">This audio is currently unavailable.\nCheck back again later.</string>
+    <string name="msg_audio_not_available" tools:ignore="MissingTranslation">This audio is currently unavailable.\nCheck back again later.</string>
     <!-- Error shown when video has flag to indicate it is not available for mobile app -->
     <string name="video_only_on_web_label">This video is currently only on web. Click to view on web.</string>
     <!-- Message to indicate the it is not available for mobile app  -->
@@ -647,7 +647,7 @@
     <string name="delete_media_title" tools:ignore="MissingTranslation">Delete Media</string>
     <string name="visit_course_to_download" tools:ignore="MissingTranslation">Visit the course to download</string>
     <string name="no_downloadable_content" tools:ignore="MissingTranslation">No downloadable content available</string>
-    <string name="coming_soon">Coming Soon</string>
-    <string name="media_download_status">Media Download Status</string>
+    <string name="coming_soon" tools:ignore="MissingTranslation">Coming Soon</string>
+    <string name="media_download_status" tools:ignore="MissingTranslation">Media Download Status</string>
 
 </resources>
