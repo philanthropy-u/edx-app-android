@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragment;
 import org.edx.mobile.databinding.FragmentWhatsNewItemBinding;
@@ -57,7 +59,11 @@ public class WhatsNewItemFragment extends BaseFragment {
     private void loadImage(String imageName) {
         @DrawableRes
         final int imageRes = UiUtil.getDrawable(getContext(), imageName);
-        binding.image.setImageResource(imageRes);
+        Glide.with(binding.image.getContext())
+                .load(imageRes)
+                .fitCenter()
+                .dontAnimate()
+                .into(binding.image);
     }
 
     private String escapePlatformName(@NonNull String input) {

@@ -108,11 +108,6 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
         View view = inflater.inflate(R.layout.fragment_course_outline, container, false);
         listView = (ListView) view.findViewById(R.id.outline_list);
 
-        View footer = new View(getContext());
-        footer.setMinimumHeight((int) getContext().getResources().getDimension(R.dimen.banner_height));
-        footer.setMinimumWidth(10); // random number > 0
-        listView.addFooterView(footer);
-
         courseStatusUnit = (LinearLayout) view.findViewById(R.id.status_layout);
         courseDownloadStatus = (TextView) view.findViewById(R.id.course_download_status);
         courseDownloadStatusIcon = (IconImageViewXml) view.findViewById(R.id.course_download_status_icon);
@@ -200,7 +195,7 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     }
 
     private void setRowStateOnDownload(DownloadEntry.DownloadedState state, String relativeTimeStamp, View.OnClickListener listener) {
-        if(isVisible()) {
+        if (isVisible()) {
             listView.setOnScrollListener(onScrollListener());
             courseStatusUnit.setVisibility(View.VISIBLE);
             updateDownloadStatus(getContext(), state, listener, relativeTimeStamp);
@@ -210,33 +205,26 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     public AbsListView.OnScrollListener onScrollListener() {
         return new AbsListView.OnScrollListener() {
 
+            public int mLastFirstVisibleItem;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (view.getId() == listView.getId()) {
+                    final int currentFirstVisibleItem = listView.getFirstVisiblePosition();
+                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                        courseStatusUnit.animate().translationY(courseStatusUnit.getMeasuredHeight() * 2)
+                                .setInterpolator(new AccelerateInterpolator(1));
+                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                        courseStatusUnit.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                    }
+
+                    mLastFirstVisibleItem = currentFirstVisibleItem;
+                }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
-                if (firstVisibleItem == 0) {
-                    // check if we reached the top or bottom of the list
-                    View v = listView.getChildAt(0);
-                    int offset = (v == null) ? 0 : v.getTop();
-                    if (offset == 0) {
-                        // reached the top: visible header and footer
-                        Log.i(TAG, "top reached");
-                    }
-                } else if (totalItemCount - visibleItemCount == firstVisibleItem) {
-                    View v = listView.getChildAt(totalItemCount - 1);
-                    int offset = (v == null) ? 0 : v.getTop();
-                    if (offset == 0) {
-                        // reached the bottom: show footer
-                        courseStatusUnit.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
-                    }
-                } else if (totalItemCount - visibleItemCount > firstVisibleItem) {
-                    // on scrolling: hide footer
-                    courseStatusUnit.animate().translationY(courseStatusUnit.getMeasuredHeight() * 2)
-                            .setInterpolator(new AccelerateInterpolator(1));
-                }
             }
         };
     }
