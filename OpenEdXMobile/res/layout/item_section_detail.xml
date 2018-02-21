@@ -14,7 +14,8 @@
         android:layout_marginStart="@dimen/edx_margin"
         app:line="@color/edx_input_border_color"
         app:lineSize="@dimen/timeline_line_width"
-        app:markerSize="@dimen/timeline_marker_size_small" />
+        app:markerSize="@dimen/timeline_marker_size_small"
+        android:layout_marginLeft="@dimen/edx_margin" />
 
     <FrameLayout
         android:id="@+id/card_holder"
@@ -30,14 +31,18 @@
             android:layout_marginStart="@dimen/multiple_items_start_margin"
             android:layout_marginTop="@dimen/multiple_items_top_margin"
             android:visibility="gone"
-            app:cardElevation="@dimen/multiple_items_cv_elevation" />
+            app:cardElevation="@dimen/multiple_items_cv_elevation"
+            android:layout_marginRight="@dimen/multiple_items_end_margin"
+            android:layout_marginLeft="@dimen/multiple_items_start_margin" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/subsection_row_cv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/single_item_vertical_margin"
+            android:layout_marginRight="@dimen/edx_margin"
             android:layout_marginEnd="@dimen/edx_margin"
+            android:layout_marginLeft="@dimen/edx_margin"
             android:layout_marginStart="@dimen/edx_margin"
             android:layout_marginTop="@dimen/single_item_vertical_margin"
             android:foreground="@drawable/course_outline_selector"
@@ -59,14 +64,17 @@
                     app:iconColor="@color/edx_brand_primary_base"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginLeft="@dimen/edx_margin" />
 
                 <LinearLayout
                     android:id="@+id/title_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/edx_margin"
+                    android:layout_marginRight="@dimen/edx_margin"
                     android:layout_marginEnd="@dimen/edx_margin"
+                    android:layout_marginLeft="@dimen/edx_margin"
                     android:layout_marginStart="@dimen/edx_margin"
                     android:layout_marginTop="@dimen/edx_margin"
                     android:orientation="vertical"
