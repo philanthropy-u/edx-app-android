@@ -33,8 +33,11 @@ import org.edx.mobile.loader.AsyncTaskResult;
 import org.edx.mobile.loader.CoursesAsyncLoader;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
+import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.module.analytics.Analytics;
 import org.edx.mobile.module.prefs.LoginPrefs;
+import org.edx.mobile.services.CourseManager;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.MyCoursesAdapter;
 
@@ -57,6 +60,11 @@ public class MyCoursesListFragment extends BaseFragment
     private boolean refreshOnResume = false;
 
     @Inject
+    CourseManager courseManager;
+
+    @Inject
+    MediaDownloadHelper downloadManager;
+    @Inject
     private IEdxEnvironment environment;
 
     @Inject
@@ -73,15 +81,31 @@ public class MyCoursesListFragment extends BaseFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        adapter = new MyCoursesAdapter(getActivity(), environment) {
+        adapter = new MyCoursesAdapter(getActivity(), environment, courseManager) {
             @Override
             public void onItemClicked(EnrolledCoursesResponse model) {
-                environment.getRouter().showCourseDashboardTabs(getActivity(), environment.getConfig(), model, false);
+//                environment.getRouter().showCourseDashboardTabs(getActivity(), environment.getConfig(), model, false);
+                // directly navigates to course outline screen
+                environment.getRouter().showCourseContainerOutline(getActivity(),
+                        model, false);
             }
 
             @Override
             public void onAnnouncementClicked(EnrolledCoursesResponse model) {
                 environment.getRouter().showCourseDashboardTabs(getActivity(), environment.getConfig(), model, true);
+            }
+
+            @Override
+            public void download(List<CourseComponent> models) {
+                MyCoursesListActivity activity = (MyCoursesListActivity) getActivity();
+                if (NetworkUtil.verifyDownloadPossible(activity)) {
+                    downloadManager.downloadMedia(models, activity, activity);
+                }
+            }
+
+            @Override
+            public void viewDownloadsStatus() {
+                environment.getRouter().showDownloads(getActivity());
             }
         };
         environment.getAnalyticsRegistry().trackScreenView(Analytics.Screens.MY_COURSES);
@@ -140,7 +164,7 @@ public class MyCoursesListFragment extends BaseFragment
             } else if (exception instanceof HttpStatusException) {
                 final HttpStatusException httpStatusException = (HttpStatusException) exception;
                 switch (httpStatusException.getStatusCode()) {
-                    case HttpStatus.UNAUTHORIZED:{
+                    case HttpStatus.UNAUTHORIZED: {
                         environment.getRouter().forceLogout(getContext(),
                                 environment.getAnalyticsRegistry(),
                                 environment.getNotificationDelegate());
@@ -204,6 +228,8 @@ public class MyCoursesListFragment extends BaseFragment
         if (refreshOnResume) {
             loadData(true);
             refreshOnResume = false;
+        } else {
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -288,7 +314,9 @@ public class MyCoursesListFragment extends BaseFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.my_courses, menu);
+        if (environment.getConfig().getCourseDiscoveryConfig().isCourseDiscoveryEnabled()) {
+            inflater.inflate(R.menu.my_courses, menu);
+        }
     }
 
     @Override

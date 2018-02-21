@@ -55,7 +55,7 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
     private final Logger logger = new Logger(getClass().getName());
 
     public interface DownloadListener {
-        void download(List<? extends HasDownloadEntry> models);
+        void download(List<CourseComponent> models);
 
         void download(DownloadEntry videoData);
 
@@ -73,11 +73,10 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
     private IStorage storage;
     private EnrolledCoursesResponse courseData;
     private DownloadListener downloadListener;
-    private boolean isVideoMode;
 
     public NewCourseOutlineAdapter(Context context, EnrolledCoursesResponse courseData,
                                    IEdxEnvironment environment, NewCourseOutlineAdapter.DownloadListener listener,
-                                   boolean isVideoMode, boolean isOnCourseOutline) {
+                                   boolean isOnCourseOutline) {
         this.context = context;
         this.environment = environment;
         this.config = environment.getConfig();
@@ -85,10 +84,9 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
         this.storage = environment.getStorage();
         this.courseData = courseData;
         this.downloadListener = listener;
-        this.isVideoMode = isVideoMode;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         adapterData = new ArrayList();
-        if (isOnCourseOutline && !isVideoMode) {
+        if (isOnCourseOutline) {
             adapterData.add(new SectionRow(SectionRow.COURSE_CARD, null));
         }
     }
@@ -181,15 +179,11 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
             List<IBlock> children = rootComponent.getChildren();
             for (IBlock block : children) {
                 CourseComponent comp = (CourseComponent) block;
-                if (isVideoMode && comp.getVideos().size() == 0)
-                    continue;
                 if (comp.isContainer()) {
                     SectionRow header = new SectionRow(SectionRow.SECTION, comp);
                     adapterData.add(header);
                     for (IBlock childBlock : comp.getChildren()) {
                         CourseComponent child = (CourseComponent) childBlock;
-                        if (isVideoMode && child.getVideos().size() == 0)
-                            continue;
                         SectionRow row = new SectionRow(SectionRow.ITEM, false, child);
                         adapterData.add(row);
                     }
@@ -358,7 +352,7 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
             }
         }
 
-        dbStore.getWatchedStateForVideoId(videoData.videoId,
+        dbStore.getWatchedStateForVideoId(videoData.blockId,
                 new DataCallback<DownloadEntry.WatchedState>(true) {
                     @Override
                     public void onResult(DownloadEntry.WatchedState result) {
@@ -379,7 +373,7 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
             viewHolder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
         } else {
             viewHolder.numOfVideoAndDownloadArea.setVisibility(View.VISIBLE);
-            dbStore.getDownloadedStateForVideoId(videoData.videoId,
+            dbStore.getDownloadedStateForVideoId(videoData.blockId,
                     new DataCallback<DownloadEntry.DownloadedState>(true) {
                         @Override
                         public void onResult(DownloadEntry.DownloadedState state) {
@@ -447,7 +441,7 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
             }
         }
 
-        final int totalDownloadableVideos = component.getDownloadableVideosCount();
+        final int totalDownloadableVideos = component.getDownloadableMediaCount();
         // support video download for video type excluding the ones only viewable on web
         if (totalDownloadableVideos == 0) {
             holder.numOfVideoAndDownloadArea.setVisibility(View.GONE);
@@ -456,7 +450,7 @@ public class NewCourseOutlineAdapter extends BaseAdapter {
             holder.noOfVideos.setVisibility(View.VISIBLE);
             holder.noOfVideos.setText("" + totalDownloadableVideos);
 
-            Integer downloadedCount = dbStore.getDownloadedVideosCountForSection(courseId,
+            Integer downloadedCount = dbStore.getDownloadedMediaCountForSection(courseId,
                     chapterId, sequentialId, null);
 
             if (downloadedCount == totalDownloadableVideos) {

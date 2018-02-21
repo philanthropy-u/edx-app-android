@@ -1,8 +1,8 @@
 package org.edx.mobile.view.custom;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,14 +16,24 @@ import java.util.List;
 
 public class IndicatorController {
     private static final int FIRST_PAGE_NUM = 0;
-    private static final int DEFAULT_COLOR = 1;
 
     private Context context;
     private LinearLayout dotLayout;
     private List<ImageView> dots;
     private int slideCount;
-    private int selectedDotColor = DEFAULT_COLOR;
-    private int unselectedDotColor = DEFAULT_COLOR;
+
+    @DrawableRes
+    private int indicatorDotActiveLayout = R.drawable.indicator_dot_active;
+    @DrawableRes
+    private int indicatorDotInactiveLayout = R.drawable.indicator_dot_inactive;
+
+    public IndicatorController() {
+    }
+
+    public IndicatorController(@DrawableRes int indicatorDotActiveLayout, @DrawableRes int indicatorDotInactiveLayout) {
+        this.indicatorDotActiveLayout = indicatorDotActiveLayout;
+        this.indicatorDotInactiveLayout = indicatorDotInactiveLayout;
+    }
 
     public View newInstance(@NonNull Context context) {
         this.context = context;
@@ -31,15 +41,15 @@ public class IndicatorController {
         return dotLayout;
     }
 
-    public void initialize(int slideCount) {
+    public void setCount(int slideCount) {
         dots = new ArrayList<>();
         this.slideCount = slideCount;
-        selectedDotColor = -1;
-        unselectedDotColor = -1;
+
+        dotLayout.removeAllViews();
 
         for (int i = 0; i < slideCount; i++) {
             ImageView dot = new ImageView(context);
-            dot.setImageDrawable(UiUtil.getDrawable(context, R.drawable.indicator_dot_active));
+            dot.setImageDrawable(UiUtil.getDrawable(context, indicatorDotActiveLayout));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -55,12 +65,8 @@ public class IndicatorController {
 
     public void selectPosition(int index) {
         for (int i = 0; i < slideCount; i++) {
-            int drawableId = (i == index) ? (R.drawable.indicator_dot_inactive) : (R.drawable.indicator_dot_active);
+            int drawableId = i == index ? indicatorDotActiveLayout : indicatorDotInactiveLayout;
             Drawable drawable = UiUtil.getDrawable(context, drawableId);
-            if (selectedDotColor != DEFAULT_COLOR && i == index)
-                drawable.mutate().setColorFilter(selectedDotColor, PorterDuff.Mode.SRC_IN);
-            if (unselectedDotColor != DEFAULT_COLOR && i != index)
-                drawable.mutate().setColorFilter(unselectedDotColor, PorterDuff.Mode.SRC_IN);
             dots.get(i).setImageDrawable(drawable);
         }
     }

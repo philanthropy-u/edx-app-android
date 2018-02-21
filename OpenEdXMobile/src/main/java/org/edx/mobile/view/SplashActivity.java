@@ -21,6 +21,7 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (!Config.FabricBranchConfig.isBranchEnabled(config.getFabricConfig())) {
             finish();
         }
@@ -40,6 +41,7 @@ public class SplashActivity extends Activity {
         }
 
         final IEdxEnvironment environment = MainApplication.getEnvironment(this);
+        environment.getRouter().stopAudioServiceIfRunning(this);
         if (environment.getUserPrefs().getProfile() != null) {
             environment.getRouter().showMyCourses(SplashActivity.this);
         } else if (!environment.getConfig().isRegistrationEnabled()) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.edx.mobile"
     android:installLocation="auto">
 
@@ -32,9 +33,11 @@
         android:name=".base.RuntimeApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="${supportsRtl}"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:supportsRtl">
 
         <activity
             android:name="org.edx.mobile.view.SplashActivity"
@@ -70,7 +73,8 @@
             android:name="org.edx.mobile.view.LoginActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing" />
+            android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="org.edx.mobile.view.MyCoursesListActivity"
@@ -246,7 +250,7 @@
         <activity
             android:name=".whatsnew.WhatsNewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.TransparentStatusBar" />
 
         <activity
             android:name=".view.CourseTabsDashboardActivity"
@@ -299,6 +303,10 @@
         </receiver>
 
         <service android:name="org.edx.mobile.services.DownloadSpeedService" />
+        <service android:name=".player.AudioMediaService" />
+        <service
+            android:name=".services.CourseMediaStatusRefreshService"
+            android:exported="false"/>
     </application>
 
 </manifest>

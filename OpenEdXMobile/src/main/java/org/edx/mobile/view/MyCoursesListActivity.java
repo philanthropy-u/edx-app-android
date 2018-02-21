@@ -18,6 +18,8 @@ import org.edx.mobile.module.analytics.Analytics;
 import org.edx.mobile.module.db.DataCallback;
 import org.edx.mobile.module.notification.NotificationDelegate;
 import org.edx.mobile.module.prefs.PrefManager;
+import org.edx.mobile.services.CourseMediaStatusRefreshService;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.AppStoreUtils;
 import org.edx.mobile.util.IntentFactory;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import de.greenrobot.event.EventBus;
 import roboguice.inject.InjectView;
 
-public class MyCoursesListActivity extends BaseSingleFragmentActivity {
+public class MyCoursesListActivity extends BaseSingleFragmentActivity implements MediaDownloadHelper.DownloadManagerCallback {
 
     @NonNull
     @InjectView(R.id.coordinator_layout)
@@ -37,6 +39,8 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity {
 
     @Inject
     NotificationDelegate notificationDelegate;
+
+    private MyCoursesListFragment fragment;
 
     public static Intent newIntent() {
         // These flags will make it so we only have a single instance of this activity,
@@ -51,7 +55,7 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity {
 
         initWhatsNew();
         configureDrawer();
-        setTitle(getString(R.string.label_my_courses));
+        setTitle(getString(R.string.label_my_courses).toUpperCase());
         environment.getAnalyticsRegistry().trackScreenView(Analytics.Screens.MY_COURSES);
     }
 
@@ -103,7 +107,8 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity {
 
     @Override
     public Fragment getFirstFragment() {
-        return new MyCoursesListFragment();
+        fragment = new MyCoursesListFragment();
+        return fragment;
     }
 
 
@@ -111,6 +116,11 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity {
     protected void onResume() {
         super.onResume();
         notificationDelegate.checkAppUpgrade();
+        updateDownloadedMediaStatus();
+    }
+
+    private void updateDownloadedMediaStatus() {
+        startService(new Intent(this.getBaseContext(), CourseMediaStatusRefreshService.class));
     }
 
     public void updateDatabaseAfterDownload(ArrayList<EnrolledCoursesResponse> list) {
@@ -168,5 +178,26 @@ public class MyCoursesListActivity extends BaseSingleFragmentActivity {
             });
             snackbar.show();
         }
+    }
+
+    @Override
+    public void onDownloadStarted(Long result) {
+        updateListUI();
+    }
+
+    @Override
+    public void onDownloadFailedToStart() {
+        updateListUI();
+    }
+
+    @Override
+    public void showProgressDialog(int numDownloads) {
+        updateListUI();
+    }
+
+    @Override
+    public void updateListUI() {
+        if (fragment != null)
+            fragment.loadData(false);
     }
 }

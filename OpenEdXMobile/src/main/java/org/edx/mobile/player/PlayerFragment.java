@@ -175,7 +175,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.panel_player, null);
+        View view = inflater.inflate(R.layout.panel_media_player, null);
         this.layoutInflater = inflater;
 
         uiHelper = IUiLifecycleHelper.Factory.getInstance(getActivity(), null);
@@ -524,7 +524,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         if (trModel != null)
         {
             this.transcript = trModel;
-            transcriptManager.downloadTranscriptsForVideo(trModel);
+            transcriptManager.downloadTranscriptsForMedia(trModel);
             //initializeClosedCaptioning();
         }
 
@@ -549,7 +549,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
 
             this.transcript = trModel;
             player.setLMSUrl(video.lmsUrl);
-            player.setVideoTitle(title);
+            player.setMediaTitle(title);
 
             logger.debug("playing [seek=" + seekTo + "]: " + path);
 
@@ -619,7 +619,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
     }
 
     @Override
-    public void onVideoLagging() {
+    public void onMediaLagging() {
         if ( !NetworkUtil.isConnected(getActivity())) {
             // no network and video lagging, might be network problem
             showNetworkError();
@@ -627,7 +627,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
     }
 
     @Override
-    public void onVideoNotSeekable() {
+    public void onMediaNotSeekable() {
     }
 
     @Override
@@ -644,7 +644,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         try{
             if(player!=null){
                 double current_time = player.getCurrentPosition()/AppConstants.MILLISECONDS_PER_SECOND ;
-                environment.getAnalyticsRegistry().trackVideoPause(videoEntry.videoId, current_time,
+                environment.getAnalyticsRegistry().trackMediaPause(videoEntry.blockId, current_time,
                         videoEntry.eid, videoEntry.lmsUrl);
             }
         }catch(Exception e){
@@ -727,8 +727,10 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
                 hideProgress();
 
                 View errorView;
-                if ( reason == VideoNotPlayMessageType.IS_VIDEO_MESSAGE_DISPLAYED)
-                    errorView = getView().findViewById(R.id.panel_video_not_available);
+                if ( reason == VideoNotPlayMessageType.IS_VIDEO_MESSAGE_DISPLAYED){
+                    errorView = getView().findViewById(R.id.panel_media_not_available);
+                    ((TextView)errorView.findViewById(R.id.text_media_error)).setText(getText(R.string.msg_video_not_available));
+                }
                 else
                     errorView = getView().findViewById(R.id.panel_video_only_on_web);
                 errorView.setVisibility(View.VISIBLE);
@@ -745,7 +747,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         try {
             View errorView;
             if ( reason == VideoNotPlayMessageType.IS_VIDEO_MESSAGE_DISPLAYED)
-                errorView = getView().findViewById(R.id.panel_video_not_available);
+                errorView = getView().findViewById(R.id.panel_media_not_available);
             else
                 errorView = getView().findViewById(R.id.panel_video_only_on_web);
             errorView.setVisibility(View.GONE);
@@ -783,7 +785,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         clearAllErrors();
         initializeClosedCaptioning();
         handler.postDelayed(unfreezeCallback, UNFREEZE_DELAY_MS);
-        environment.getAnalyticsRegistry().trackVideoLoading(videoEntry.videoId, videoEntry.eid,
+        environment.getAnalyticsRegistry().trackMediaLoading(videoEntry.blockId, videoEntry.eid,
                 videoEntry.lmsUrl);
     }
 
@@ -813,7 +815,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         try{
             if(player!=null){
                 double current_time = player.getCurrentPosition()/AppConstants.MILLISECONDS_PER_SECOND ;
-                environment.getAnalyticsRegistry().trackVideoPlaying(videoEntry.videoId, current_time
+                environment.getAnalyticsRegistry().trackMediaPlaying(videoEntry.blockId, current_time
                         , videoEntry.eid, videoEntry.lmsUrl);
             }
         }catch(Exception e){
@@ -841,7 +843,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
         try{
             if(player!=null){
                 double current_time = player.getCurrentPosition()/AppConstants.MILLISECONDS_PER_SECOND ;
-                environment.getAnalyticsRegistry().trackVideoStop(videoEntry.videoId,
+                environment.getAnalyticsRegistry().trackMediaStop(videoEntry.blockId,
                         current_time, videoEntry.eid, videoEntry.lmsUrl);
             }
         }catch(Exception e){
@@ -910,7 +912,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
             } else {
                 exitFullScreen();
             }
-            environment.getAnalyticsRegistry().trackVideoOrientation(videoEntry.videoId,
+            environment.getAnalyticsRegistry().trackMediaOrientation(videoEntry.blockId,
                     player.getCurrentPosition() / AppConstants.MILLISECONDS_PER_SECOND,
                     isFullScreen, videoEntry.eid, videoEntry.lmsUrl);
         } else {
@@ -1188,7 +1190,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
             try
             {
                 LinkedHashMap<String, InputStream> localHashMap = transcriptManager
-                        .fetchTranscriptsForVideo(transcript);
+                        .fetchTranscriptsForMedia(transcript);
 
                 if (localHashMap != null){
                     for(String thisKey : localHashMap.keySet()){
@@ -1517,10 +1519,10 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
                     final String languageSubtitle = lang.keySet().toArray()[0].toString();
                     setSubtitleLanguage(languageSubtitle);
                     if (player != null) {
-                        environment.getAnalyticsRegistry().trackShowTranscript(videoEntry.videoId,
+                        environment.getAnalyticsRegistry().trackShowTranscript(videoEntry.blockId,
                                 player.getCurrentPosition() / AppConstants.MILLISECONDS_PER_SECOND,
                                 videoEntry.eid, videoEntry.lmsUrl);
-                        environment.getAnalyticsRegistry().trackTranscriptLanguage(videoEntry.videoId,
+                        environment.getAnalyticsRegistry().trackTranscriptLanguage(videoEntry.blockId,
                                 player.getCurrentPosition() / AppConstants.MILLISECONDS_PER_SECOND,
                                 languageSubtitle, videoEntry.eid, videoEntry.lmsUrl);
                     }
@@ -1537,7 +1539,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
                     hideClosedCaptioning();
                     setSubtitleLanguage(getString(R.string.lbl_cc_cancel));
                     if (player != null) {
-                        environment.getAnalyticsRegistry().trackHideTranscript(videoEntry.videoId,
+                        environment.getAnalyticsRegistry().trackHideTranscript(videoEntry.blockId,
                                 player.getCurrentPosition() / AppConstants.MILLISECONDS_PER_SECOND,
                                 videoEntry.eid, videoEntry.lmsUrl);
                     }
@@ -1626,7 +1628,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
                 if (subtitlesObj != null) {
                     closedCaptionsEnabled = true;
                     if (player != null) {
-                        environment.getAnalyticsRegistry().trackShowTranscript(videoEntry.videoId,
+                        environment.getAnalyticsRegistry().trackShowTranscript(videoEntry.blockId,
                                 player.getCurrentPosition() / AppConstants.MILLISECONDS_PER_SECOND,
                                 videoEntry.eid, videoEntry.lmsUrl);
                     }
@@ -1674,7 +1676,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
             if(isRewindClicked){
                 resetClosedCaptioning();
             }
-            environment.getAnalyticsRegistry().trackVideoSeek(videoEntry.videoId,
+            environment.getAnalyticsRegistry().trackMediaSeek(videoEntry.blockId,
                     lastPostion/AppConstants.MILLISECONDS_PER_SECOND,
                     newPosition/AppConstants.MILLISECONDS_PER_SECOND,
                     videoEntry.eid, videoEntry.lmsUrl,

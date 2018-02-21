@@ -80,7 +80,7 @@ public abstract class MainApplication extends MultiDexApplication {
         injector.injectMembers(this);
 
         // initialize Fabric
-        if (config.getFabricConfig().isEnabled() && !BuildConfig.DEBUG) {
+        if (config.getFabricConfig().isEnabled() /*&& !BuildConfig.DEBUG*/) {
             Fabric.with(this, config.getFabricConfig().getKitsConfig().getEnabledKits());
 
             if (config.getFabricConfig().getKitsConfig().isCrashlyticsEnabled()) {
@@ -130,7 +130,7 @@ public abstract class MainApplication extends MultiDexApplication {
         Iconify.with(new FontAwesomeModule());
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                .setDefaultFontPath("fonts/montserrat/Regular.otf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );

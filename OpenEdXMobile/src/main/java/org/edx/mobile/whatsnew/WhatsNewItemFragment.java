@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragment;
 import org.edx.mobile.databinding.FragmentWhatsNewItemBinding;
@@ -44,20 +46,24 @@ public class WhatsNewItemFragment extends BaseFragment {
         final WhatsNewItemModel model = args.getParcelable(ARG_MODEL);
 
         binding.title.setText(escapePlatformName(model.getTitle()));
+        binding.messageTitle.setText(escapePlatformName(model.getMessageTitle()));
         binding.message.setText(escapePlatformName(model.getMessage()));
 
-        @DrawableRes
-        final int imageRes = UiUtil.getDrawable(getContext(), model.getImage());
-        binding.image.setImageResource(imageRes);
-        // We need different scale types for portrait and landscape images
-        final Drawable drawable = UiUtil.getDrawable(getContext(), imageRes);
-        if (drawable != null) {
-            if (drawable.getIntrinsicHeight() > drawable.getIntrinsicWidth()) {
-                binding.image.setScaleType(ImageView.ScaleType.FIT_END);
-            } else {
-                binding.image.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            }
+        if (!model.getImage().isEmpty()) {
+            loadImage(model.getImage());
+        } else {
+            binding.image.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void loadImage(String imageName) {
+        @DrawableRes
+        final int imageRes = UiUtil.getDrawable(getContext(), imageName);
+        Glide.with(binding.image.getContext())
+                .load(imageRes)
+                .fitCenter()
+                .dontAnimate()
+                .into(binding.image);
     }
 
     private String escapePlatformName(@NonNull String input) {

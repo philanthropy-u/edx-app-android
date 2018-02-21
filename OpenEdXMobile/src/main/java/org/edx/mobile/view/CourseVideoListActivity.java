@@ -7,10 +7,9 @@ import android.view.Menu;
 import android.view.View;
 
 import org.edx.mobile.logger.Logger;
-import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.services.LastAccessManager;
-import org.edx.mobile.services.VideoDownloadHelper;
+import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
 
 import javax.inject.Inject;
@@ -19,7 +18,7 @@ import javax.inject.Inject;
  * Created by hanning on 5/15/15.
  */
 public abstract class CourseVideoListActivity  extends CourseBaseActivity implements
-    LastAccessManager.LastAccessManagerCallback ,VideoDownloadHelper.DownloadManagerCallback {
+    LastAccessManager.LastAccessManagerCallback ,MediaDownloadHelper.DownloadManagerCallback {
 
     protected Logger logger = new Logger(getClass().getSimpleName());
 
