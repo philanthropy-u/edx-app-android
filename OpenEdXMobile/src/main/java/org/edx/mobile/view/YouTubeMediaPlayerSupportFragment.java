@@ -11,6 +11,8 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
+import org.edx.mobile.R;
+
 /**
  * Created by Zohaib Asaad on 1/9/2018.
  */
@@ -38,10 +40,10 @@ public class YouTubeMediaPlayerSupportFragment extends YouTubePlayerSupportFragm
 
     private void initialize() {
         try {
-
             initialize(apiKey, this);
         }catch (Exception e){
             e.printStackTrace();
+            Toast.makeText(getActivity(), getString(R.string.youtube_initialization_failure), Toast.LENGTH_LONG).show();
         }
     }
 

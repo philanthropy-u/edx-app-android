@@ -4,6 +4,7 @@ package org.edx.mobile.view.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.text.TextUtils;
 
 import org.edx.mobile.core.IEdxEnvironment;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
@@ -71,7 +72,7 @@ public class CourseUnitPagerAdapter extends FragmentStatePagerAdapter {
         //FIXME - for the video, let's ignore studentViewMultiDevice for now
         if (unit instanceof AudioBlockModel) {
             unitFragment = CourseUnitAudioFragment.newInstance((AudioBlockModel) unit, (pos < unitList.size()), (pos > 0));
-        } else if (isYoutubeVideo(unit)&& !isDownloaded(unit)) {
+        } else if (isYoutubeVideo(unit)&& !isDownloaded(unit) && !TextUtils.isEmpty(environment.getConfig().getYoutubeApiKey())) {
             unitFragment = CourseUnitOnlyOnYoutubeFragment.newInstance(unit, environment.getConfig().getYoutubeApiKey());
         } else if (isCourseUnitVideo(unit)) {
             unitFragment = CourseUnitVideoFragment.newInstance((VideoBlockModel) unit, (pos < unitList.size()), (pos > 0));
