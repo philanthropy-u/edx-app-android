@@ -37,7 +37,12 @@ public class YouTubeMediaPlayerSupportFragment extends YouTubePlayerSupportFragm
     }
 
     private void initialize() {
-        initialize(apiKey, this);
+        try {
+
+            initialize(apiKey, this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
