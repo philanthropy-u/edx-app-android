@@ -564,7 +564,6 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
             case DOWNLOADED:
                 courseDownloadStatusIcon.setImageResource(R.drawable.ic_done);
                 courseDownloadStatusIcon.setIconAnimation(Animation.NONE);
-                courseDownloadStatusIcon.setIconColorResource(R.color.black);
                 courseDownloadStatus.setText(String.format(context.getString(R.string.media_saved_time_ago), relativeTimeStamp));
                 courseDownloadStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
                 courseStatusUnit.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_1));

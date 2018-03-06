@@ -240,8 +240,12 @@ public class CourseUnitNavigationActivity extends CourseBaseActivity implements
 
         findViewById(R.id.course_unit_nav_bar).requestLayout();
 
-        setTitle(selectedUnit.getDisplayName());
-
+        setTitle(selectedUnit.getParent().getDisplayName());
+        try{
+            getSupportActionBar().setSubtitle(selectedUnit.getDisplayName());
+        }catch (NullPointerException ex){
+            logger.error(ex);
+        }
         String currentSubsectionId = selectedUnit.getParent().getId();
         if (curIndex + 1 <= pagerAdapter.getCount() - 1) {
             String nextUnitSubsectionId = unitList.get(curIndex + 1).getParent().getId();
