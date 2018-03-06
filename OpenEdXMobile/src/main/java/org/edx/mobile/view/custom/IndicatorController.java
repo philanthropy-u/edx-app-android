@@ -42,32 +42,34 @@ public class IndicatorController {
     }
 
     public void setCount(int slideCount) {
-        dots = new ArrayList<>();
-        this.slideCount = slideCount;
-
         dotLayout.removeAllViews();
+        this.slideCount = slideCount;
+        if(slideCount > 1){
+            dots = new ArrayList<>();
+            for (int i = 0; i < slideCount; i++) {
+                ImageView dot = new ImageView(context);
+                dot.setImageDrawable(UiUtil.getDrawable(context, indicatorDotActiveLayout));
 
-        for (int i = 0; i < slideCount; i++) {
-            ImageView dot = new ImageView(context);
-            dot.setImageDrawable(UiUtil.getDrawable(context, indicatorDotActiveLayout));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
+                dotLayout.addView(dot, params);
+                dots.add(dot);
+            }
 
-            dotLayout.addView(dot, params);
-            dots.add(dot);
+            selectPosition(FIRST_PAGE_NUM);
         }
-
-        selectPosition(FIRST_PAGE_NUM);
     }
 
     public void selectPosition(int index) {
-        for (int i = 0; i < slideCount; i++) {
-            int drawableId = i == index ? indicatorDotActiveLayout : indicatorDotInactiveLayout;
-            Drawable drawable = UiUtil.getDrawable(context, drawableId);
-            dots.get(i).setImageDrawable(drawable);
+        if(slideCount > 1){
+            for (int i = 0; i < slideCount; i++) {
+                int drawableId = i == index ? indicatorDotActiveLayout : indicatorDotInactiveLayout;
+                Drawable drawable = UiUtil.getDrawable(context, drawableId);
+                dots.get(i).setImageDrawable(drawable);
+            }
         }
     }
 }
