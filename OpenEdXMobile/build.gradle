@@ -258,6 +258,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         versionName getVersionName()
+        versionCode 2
         renderscriptTargetApi 22
         renderscriptSupportModeEnabled true
         // test configuration
