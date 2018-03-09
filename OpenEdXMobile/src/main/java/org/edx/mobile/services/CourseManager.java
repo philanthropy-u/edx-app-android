@@ -56,7 +56,7 @@ public class CourseManager {
         } catch (Exception e) {
             logger.error(e);
         }
-        return null;
+        return new CourseComponent();
     }
 
 }
