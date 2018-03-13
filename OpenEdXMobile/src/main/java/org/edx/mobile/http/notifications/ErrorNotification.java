@@ -77,4 +77,18 @@ public abstract class ErrorNotification {
                                    @Nullable final Icon icon,
                                    @StringRes final int actionTextResId,
                                    @Nullable final View.OnClickListener actionListener);
+
+
+    /**
+     * Show the error notification according to the provided details.
+     *
+     * @param errorMessage      The error message strring to show.
+     * @param icon            The error icon.
+     * @param actionTextResId The resource ID of the action button text.
+     * @param actionListener  The callback to be invoked when the action button is clicked.
+     */
+    public abstract void showError(String errorMessage,
+                                   @Nullable final Icon icon,
+                                   @StringRes final int actionTextResId,
+                                   @Nullable final View.OnClickListener actionListener);
 }

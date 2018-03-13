@@ -57,6 +57,10 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
     }
 
     private void updateDownloadStatus(final CourseEntry courseData, final CourseCardViewHolder holder) {
+        if (!courseData.getCoursewareAccess().hasAccess()) {
+            holder.showNoContentDownloadStatusContainer(getContext());
+            return;
+        }
         final CourseComponent component;
         try {
             component = getCourseComponent(courseData.getId());
@@ -124,7 +128,7 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
         final long currentTime = SystemClock.elapsedRealtime();
         if (currentTime - lastClickTime > MIN_CLICK_INTERVAL) {
             lastClickTime = currentTime;
-            EnrolledCoursesResponse model = (EnrolledCoursesResponse)adapterView.getItemAtPosition(position);
+            EnrolledCoursesResponse model = (EnrolledCoursesResponse) adapterView.getItemAtPosition(position);
             if (model != null) onItemClicked(model);
         }
     }

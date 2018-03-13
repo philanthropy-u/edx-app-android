@@ -214,6 +214,7 @@
     <dimen name="edx_quadruple_margin">60dp</dimen>
     <dimen name="widget_margin">10dp</dimen>
     <dimen name="widget_margin_half">5dp</dimen>
+    <dimen name="icon_margin_half">4dp</dimen>
     <dimen name="widget_margin_double">20dp</dimen>
     <dimen name="widget_margin_large">25dp</dimen>
     <dimen name="horizontal_input_padding">@dimen/widget_margin</dimen>

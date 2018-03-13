@@ -461,7 +461,7 @@ public class CourseAPI {
             @NonNull final String courseId) {
         BlockModel topBlock = courseStructureV1Model.getBlockById(courseStructureV1Model.root);
         if(topBlock == null)
-            return null;
+            return new CourseComponent();
         CourseComponent course = new CourseComponent(topBlock, null);
         course.setCourseId(courseId);
         for (BlockModel m : courseStructureV1Model.getDescendants(topBlock)) {
