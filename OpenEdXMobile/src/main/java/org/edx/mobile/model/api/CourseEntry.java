@@ -3,15 +3,15 @@ package org.edx.mobile.model.api;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
+import org.edx.mobile.R;
 import org.edx.mobile.social.SocialMember;
-import org.edx.mobile.util.DateUtil;
 import org.edx.mobile.util.UnicodeCharacters;
 import org.edx.mobile.util.UrlUtil;
 import org.edx.mobile.util.images.CourseCardUtils;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -227,5 +227,11 @@ public class CourseEntry implements Serializable {
     @Nullable
     public String getCourseSharingUtmParams(@NonNull String sharingPlatformKey) {
         return course_sharing_utm_parameters == null ? null : course_sharing_utm_parameters.get(sharingPlatformKey);
+    }
+
+    public String getErrorMessage(Context context) {
+        if(courseware_access.getError_code() == AccessError.START_DATE_ERROR)
+            return String.format(context.getString(R.string.course_not_started_date), getStartDisplay());
+        return context.getString(R.string.course_not_available);
     }
 }

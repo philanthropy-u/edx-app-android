@@ -81,6 +81,7 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
     }
 
     public void updateDownloadStatus(Context context, DownloadEntry.DownloadedState state, View.OnClickListener listener, String relativeTimeStamp) {
+        courseDownloadStatusIcon.setPadding(0,0,0,0);
         if(state == null){
             courseDownloadStatusIcon.setIcon(FontAwesomeIcons.fa_info_circle);
             courseDownloadStatusIcon.setIconColorResource(R.color.black);
