@@ -58,6 +58,7 @@ public class DialogErrorNotification extends ErrorNotification {
         }
     }
 
+    @Override
     public void showError(String message,
                           @Nullable final Icon icon,
                           @StringRes final int actionTextResId,

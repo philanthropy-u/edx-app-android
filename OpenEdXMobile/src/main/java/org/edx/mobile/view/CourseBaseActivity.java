@@ -130,13 +130,9 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity
                     snackbarErrorNotification, this) {
                 @Override
                 protected void onResponse(@NonNull final CourseComponent courseComponent) {
-                    try {
-                        courseComponentId = courseComponent.getId();
-                        invalidateOptionsMenu();
-                        onLoadData();
-                    }catch (NullPointerException e){
-                        e.printStackTrace();
-                    }
+                    courseComponentId = courseComponent.getId();
+                    invalidateOptionsMenu();
+                    onLoadData();
                 }
 
                 @Override

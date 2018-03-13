@@ -94,7 +94,7 @@ public class MyCoursesListFragment extends BaseFragment
                             model, false);
                 }
                 else {
-                    String message = String.format(getString(R.string.course_not_started_date), model.getCourse().getStartDisplay());
+                    String message = model.getCourse().getErrorMessage(getContext());
                     dialogErrorNotification.showError(message, null, 0, null);
                 }
             }
