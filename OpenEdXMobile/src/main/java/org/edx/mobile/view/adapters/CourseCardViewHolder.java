@@ -67,6 +67,15 @@ public class CourseCardViewHolder extends BaseListAdapter.BaseViewHolder {
         startingFrom.setText(formattedDate);
     }
 
+    public void showCourseNotAvailableYetStatusContainer(Context context) {
+        courseDownloadStatusIcon.setImageResource(R.drawable.ic_notification);
+        int padding = (int) context.getResources().getDimension(R.dimen.widget_margin_half);
+        courseDownloadStatusIcon.setPadding(padding, padding, padding, padding);
+        courseDownloadStatus.setText(R.string.coming_soon);
+        courseDownloadStatus.setTextColor(ContextCompat.getColor(context, R.color.black));
+        courseStatusUnit.setBackgroundColor(ContextCompat.getColor(context, R.color.grey_1));
+    }
+
     public void showNoContentDownloadStatusContainer(Context context) {
         courseDownloadStatusIcon.setImageResource(R.drawable.ic_no_content);
         int padding = (int) context.getResources().getDimension(R.dimen.widget_margin_half);
