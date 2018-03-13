@@ -57,7 +57,7 @@ public abstract class MyCoursesAdapter extends BaseListAdapter<EnrolledCoursesRe
     }
 
     private void updateDownloadStatus(final CourseEntry courseData, final CourseCardViewHolder holder) {
-        if (!courseData.hasStarted()) {
+        if (!courseData.getCoursewareAccess().hasAccess()) {
             holder.showNoContentDownloadStatusContainer(getContext());
             return;
         }

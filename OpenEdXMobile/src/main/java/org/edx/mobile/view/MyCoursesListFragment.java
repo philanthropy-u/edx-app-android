@@ -89,7 +89,7 @@ public class MyCoursesListFragment extends BaseFragment
             public void onItemClicked(EnrolledCoursesResponse model) {
 //                environment.getRouter().showCourseDashboardTabs(getActivity(), environment.getConfig(), model, false);
                 // directly navigates to course outline screen
-                if(model.getCourse().hasStarted()) {
+                if(model.getCourse().getCoursewareAccess().hasAccess()) {
                     environment.getRouter().showCourseContainerOutline(getActivity(),
                             model, false);
                 }

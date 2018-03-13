@@ -228,8 +228,4 @@ public class CourseEntry implements Serializable {
     public String getCourseSharingUtmParams(@NonNull String sharingPlatformKey) {
         return course_sharing_utm_parameters == null ? null : course_sharing_utm_parameters.get(sharingPlatformKey);
     }
-
-    public boolean hasStarted() {
-        return start_type != StartType.TIMESTAMP || !DateUtil.convertToDate(start).after(new Date());
-    }
 }
