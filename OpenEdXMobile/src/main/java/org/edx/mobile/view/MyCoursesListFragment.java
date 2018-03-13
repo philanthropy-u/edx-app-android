@@ -24,6 +24,7 @@ import org.edx.mobile.event.EnrolledInCourseEvent;
 import org.edx.mobile.exception.AuthException;
 import org.edx.mobile.http.HttpStatus;
 import org.edx.mobile.http.HttpStatusException;
+import org.edx.mobile.http.notifications.DialogErrorNotification;
 import org.edx.mobile.http.notifications.FullScreenErrorNotification;
 import org.edx.mobile.http.notifications.SnackbarErrorNotification;
 import org.edx.mobile.interfaces.NetworkObserver;
@@ -72,6 +73,8 @@ public class MyCoursesListFragment extends BaseFragment
 
     private FullScreenErrorNotification errorNotification;
 
+    private DialogErrorNotification dialogErrorNotification;
+
     private SnackbarErrorNotification snackbarErrorNotification;
 
     // Reason of usage: Helps in deciding if we want to show a full screen error or a SnackBar.
@@ -86,8 +89,14 @@ public class MyCoursesListFragment extends BaseFragment
             public void onItemClicked(EnrolledCoursesResponse model) {
 //                environment.getRouter().showCourseDashboardTabs(getActivity(), environment.getConfig(), model, false);
                 // directly navigates to course outline screen
-                environment.getRouter().showCourseContainerOutline(getActivity(),
-                        model, false);
+                if(model.getCourse().hasStarted()) {
+                    environment.getRouter().showCourseContainerOutline(getActivity(),
+                            model, false);
+                }
+                else {
+                    String message = String.format(getString(R.string.course_not_started_date), model.getCourse().getStartDisplay());
+                    dialogErrorNotification.showError(message, null, 0, null);
+                }
             }
 
             @Override
@@ -117,6 +126,7 @@ public class MyCoursesListFragment extends BaseFragment
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_courses_list, container, false);
         errorNotification = new FullScreenErrorNotification(binding.myCourseList);
+        dialogErrorNotification = new DialogErrorNotification(this);
         snackbarErrorNotification = new SnackbarErrorNotification(binding.getRoot());
         binding.swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

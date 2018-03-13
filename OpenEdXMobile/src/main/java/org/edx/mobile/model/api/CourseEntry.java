@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.edx.mobile.social.SocialMember;
+import org.edx.mobile.util.DateUtil;
 import org.edx.mobile.util.UnicodeCharacters;
 import org.edx.mobile.util.UrlUtil;
 import org.edx.mobile.util.images.CourseCardUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -225,5 +227,9 @@ public class CourseEntry implements Serializable {
     @Nullable
     public String getCourseSharingUtmParams(@NonNull String sharingPlatformKey) {
         return course_sharing_utm_parameters == null ? null : course_sharing_utm_parameters.get(sharingPlatformKey);
+    }
+
+    public boolean hasStarted() {
+        return start_type != StartType.TIMESTAMP || !DateUtil.convertToDate(start).after(new Date());
     }
 }

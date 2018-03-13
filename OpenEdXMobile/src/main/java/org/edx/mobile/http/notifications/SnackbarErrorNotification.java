@@ -58,8 +58,14 @@ public class SnackbarErrorNotification extends ErrorNotification {
                           @Nullable final Icon icon,
                           @StringRes final int actionTextResId,
                           @Nullable final View.OnClickListener actionListener) {
+        String errorMessage = view.getContext().getString(errorResId);
+        showError(errorMessage, icon, actionTextResId, actionListener);
+    }
+
+    @Override
+    public void showError(String errorMessage, @Nullable Icon icon, int actionTextResId, @Nullable View.OnClickListener actionListener) {
         if (snackbar == null) {
-            snackbar = Snackbar.make(view, errorResId, LENGTH_INDEFINITE);
+            snackbar = Snackbar.make(view, errorMessage, LENGTH_INDEFINITE);
             if (actionTextResId != 0) {
                 // SnackBar automatically dimisses when the action item is pressed.
                 // This workaround has been implemented to by pass that behaviour.
