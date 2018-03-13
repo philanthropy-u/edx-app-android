@@ -57,4 +57,21 @@ public class DialogErrorNotification extends ErrorNotification {
             ).show(baseFragment.getChildFragmentManager(), null);
         }
     }
+
+    public void showError(String message,
+                          @Nullable final Icon icon,
+                          @StringRes final int actionTextResId,
+                          @Nullable final View.OnClickListener actionListener) {
+        if (baseFragment.isResumed()) {
+            AlertDialogFragment.newInstance(null, message,
+                    actionListener == null ? null :
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    actionListener.onClick(((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE));
+                                }
+                            }
+            ).show(baseFragment.getChildFragmentManager(), null);
+        }
+    }
 }

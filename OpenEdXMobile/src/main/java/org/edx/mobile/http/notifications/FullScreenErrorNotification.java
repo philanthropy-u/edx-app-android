@@ -65,6 +65,12 @@ public class FullScreenErrorNotification extends ErrorNotification {
                           @Nullable final Icon icon,
                           @StringRes final int actionTextResId,
                           @Nullable final View.OnClickListener actionListener) {
+        String errorMessage = view.getContext().getString(errorResId);
+        showError(errorMessage, icon, actionTextResId, actionListener);
+    }
+
+    @Override
+    public void showError(String errorMessage, @Nullable Icon icon, int actionTextResId, @Nullable View.OnClickListener actionListener) {
         final ViewGroup root = findSuitableAncestorLayout();
         if (root == null) return;
 
@@ -80,7 +86,7 @@ public class FullScreenErrorNotification extends ErrorNotification {
         final Button actionButton = (Button) errorLayout.findViewById(R.id.content_error_action);
         final IconImageView iconView = (IconImageView) errorLayout.findViewById(R.id.content_error_icon);
 
-        messageView.setText(errorResId);
+        messageView.setText(errorMessage);
         if (icon == null) {
             iconView.setVisibility(GONE);
         } else {

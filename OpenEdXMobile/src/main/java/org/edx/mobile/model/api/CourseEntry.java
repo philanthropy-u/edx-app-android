@@ -5,11 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.edx.mobile.social.SocialMember;
+import org.edx.mobile.util.DateUtil;
 import org.edx.mobile.util.UnicodeCharacters;
 import org.edx.mobile.util.UrlUtil;
 import org.edx.mobile.util.images.CourseCardUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
