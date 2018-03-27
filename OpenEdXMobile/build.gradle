@@ -390,7 +390,7 @@ android {
             signingConfig signingConfigs.releasekey
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
-                    project.ext { appName = 'edx' }
+                    project.ext { appName = 'PhilanthropyU' }
                     def newName = output.outputFile.name
                     newName = newName.replace("OpenEdXMobile-", "$project.ext.appName-")
                     newName = newName.replace(("-" + variant.buildType.name), ("-" + variant.buildType.name + "-" + versionName))
