@@ -26,6 +26,7 @@ import org.edx.mobile.logger.Logger;
 import org.edx.mobile.module.analytics.AnalyticsRegistry;
 import org.edx.mobile.module.analytics.AnswersAnalytics;
 import org.edx.mobile.module.analytics.FirebaseAnalytics;
+import org.edx.mobile.module.analytics.GoogleAnalytics;
 import org.edx.mobile.module.analytics.SegmentAnalytics;
 import org.edx.mobile.module.prefs.PrefManager;
 import org.edx.mobile.module.storage.IStorage;
@@ -113,6 +114,9 @@ public abstract class MainApplication extends MultiDexApplication {
         if (config.isFirebaseEnabled())  {
             analyticsRegistry.addAnalyticsProvider(injector.getInstance(FirebaseAnalytics.class));
         }
+
+
+        analyticsRegistry.addAnalyticsProvider(injector.getInstance(GoogleAnalytics.class));
 
         registerReceiver(new NetworkConnectivityReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         registerReceiver(new NetworkConnectivityReceiver(), new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
