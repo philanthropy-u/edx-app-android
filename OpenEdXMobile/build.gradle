@@ -253,15 +253,16 @@ android {
     }
 
     defaultConfig {
-        applicationId 'org.philu.mobile'
+        applicationId 'org.philanthropyu.mobile'
         // minimum version is Android 4.0
         minSdkVersion 14
         targetSdkVersion 21
         versionName getVersionName()
+        versionCode getVersionCode()
         renderscriptTargetApi 22
         renderscriptSupportModeEnabled true
         // test configuration
-        testApplicationId 'org.philu.mobile.test'
+        testApplicationId 'org.philanthropyu.mobile.test'
         if (project.gradle.startParameter.taskNames.contains("screenshotTests")) {
             Map<String, String> map = new HashMap<String, String>();
             map.put("package", "org.edx.mobile.test.screenshot");
@@ -390,7 +391,7 @@ android {
             signingConfig signingConfigs.releasekey
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
-                    project.ext { appName = 'edx' }
+                    project.ext { appName = 'philanthropyu' }
                     def newName = output.outputFile.name
                     newName = newName.replace("OpenEdXMobile-", "$project.ext.appName-")
                     newName = newName.replace(("-" + variant.buildType.name), ("-" + variant.buildType.name + "-" + versionName))
