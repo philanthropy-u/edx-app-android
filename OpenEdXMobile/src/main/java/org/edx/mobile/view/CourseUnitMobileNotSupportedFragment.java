@@ -9,6 +9,7 @@ import android.widget.TextView;
 import org.edx.mobile.R;
 import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
+import org.edx.mobile.services.EdxCookieManager;
 import org.edx.mobile.services.ViewPagerDownloadManager;
 import org.edx.mobile.util.BrowserUtil;
 
@@ -53,6 +54,13 @@ public class CourseUnitMobileNotSupportedFragment extends CourseUnitFragment {
                 BrowserUtil.open(getActivity(), unit.getWebUrl());
                 environment.getAnalyticsRegistry().trackOpenInBrowser(unit.getId()
                         , unit.getCourseId(), unit.isMultiDevice(), unit.getBlockId());
+                /*
+                  Clearing the cookies because browser may create/update cookies that may not work
+                  for the application session so by clearing we make sure that we update cookies once
+                  user comes back to app.
+                 */
+                EdxCookieManager.getSharedInstance(getContext()).clearWebWiewCookie();
+
             }
         });
         return v;
