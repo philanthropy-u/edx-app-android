@@ -55,35 +55,36 @@ public class ParseSRT {
 
         String line = br.readLine();
         int lineCounter = 0;
-        String lastTime = "00:00:00,000";
 
+        TimedTranscriptsObject tto = null;
         try {
             while (line != null) {
                 if (!line.isEmpty()) {
-                    line = line.trim();
-                    //if its a blank line, ignore it, otherwise...
+
                     lineCounter++;
 
-                    converted.append(lineCounter).append("\n");
-
+                    line = line.trim();
                     line = line.replace("[", "").replace("]", "");
                     line = replaceLast(line, ":", ",");
 
-                    converted.append(lastTime).append(" --> ").append(line).append("\n");
+                    if (tto != null) {
+                        tto.endTime = line;
+                        converted.append(tto.toString());
+                    }
 
-                    lastTime = line;
+                    tto = new TimedTranscriptsObject();
+                    tto.tag = lineCounter;
+                    tto.startTime = line;
+
                     line = "";
-
                     while (line.isEmpty()) {
                         line = br.readLine().trim();
                     }
 
                     while (!line.isEmpty()) {
-                        converted.append(line).append("\n");
+                        tto.addText(line);
                         line = br.readLine().trim();
                     }
-
-                    converted.append("\n");
                 }
                 line = br.readLine();
             }
@@ -95,6 +96,10 @@ public class ParseSRT {
             inputStream.close();
         }
 
+        if (tto != null) {
+            tto.endTime = "59:59:59,999";
+            converted.append(tto.toString());
+        }
 
         String convertedString = converted.toString();
         return new ByteArrayInputStream(convertedString.getBytes(StandardCharsets.UTF_8));
@@ -155,6 +160,29 @@ public class ParseSRT {
         inputStreams.add(new ByteArrayInputStream(baos.toByteArray()));
 
         return inputStreams;
+    }
+
+
+    private class TimedTranscriptsObject {
+        int tag;
+        String startTime;
+        String endTime;
+        String text;
+
+        TimedTranscriptsObject() {
+            text = "";
+        }
+
+        @Override
+        public String toString() {
+            return tag + "\n" +
+                    startTime + " --> " + endTime + "\n" +
+                    text + "\n";
+        }
+
+        void addText(String line) {
+            text = text.concat(line).concat("\n");
+        }
     }
 
 
