@@ -2,8 +2,10 @@ package org.edx.mobile.view.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -32,6 +34,11 @@ public class TranscriptAdapter extends BaseListAdapter<Caption> {
         String captionText = model.content;
         if (captionText.endsWith("<br />")) {
             captionText = captionText.substring(0, captionText.length() - 6);
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            captionText = Html.fromHtml(captionText, Html.FROM_HTML_MODE_LEGACY).toString();
+        } else {
+            captionText = Html.fromHtml(captionText).toString();
         }
         viewHolder.transcriptTv.setText(captionText);
         final int position = getPosition(model);

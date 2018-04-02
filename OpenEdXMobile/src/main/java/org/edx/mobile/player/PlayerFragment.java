@@ -55,6 +55,7 @@ import org.edx.mobile.util.BrowserUtil;
 import org.edx.mobile.util.DeviceSettingUtil;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.util.OrientationDetector;
+import org.edx.mobile.util.ParseSRT;
 import org.edx.mobile.util.UiUtil;
 import org.edx.mobile.util.Version;
 import org.edx.mobile.view.dialog.CCLanguageDialogFragment;
@@ -71,7 +72,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import subtitleFile.Caption;
-import subtitleFile.FormatSRT;
 import subtitleFile.TimedTextObject;
 
 @SuppressLint("WrongViewCast")
@@ -1197,8 +1197,7 @@ public class PlayerFragment extends BaseFragment implements IPlayerListener, Ser
                         InputStream localInputStream = localHashMap.get(thisKey);
                         if (localInputStream != null)
                         {
-                            TimedTextObject localTimedTextObject =
-                                    new FormatSRT().parseFile("temp.srt", localInputStream);
+                            TimedTextObject localTimedTextObject = new ParseSRT().parse("temp.srt", localInputStream);
                             srtList.put(thisKey, localTimedTextObject);
                             localInputStream.close();
                         }
