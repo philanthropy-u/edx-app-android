@@ -325,7 +325,8 @@ public class LoginActivity
                         }
                     }, getString(android.R.string.cancel), null);
         } else {
-            showAlertDialog(getString(R.string.login_error), ErrorUtils.getErrorMessage(ex, LoginActivity.this));
+            showAlertDialog(getString(R.string.login_error),  getString(R.string.login_failed));
+//            showAlertDialog(getString(R.string.login_error), ErrorUtils.getErrorMessage(ex, LoginActivity.this));
             logger.error(ex);
         }
     }

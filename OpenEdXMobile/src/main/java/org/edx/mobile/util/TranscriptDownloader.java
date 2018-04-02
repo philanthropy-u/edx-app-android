@@ -27,7 +27,7 @@ public abstract class TranscriptDownloader implements Runnable {
     @Override
     public void run() {
         try {
-            final Response response = okHttpClientProvider.getWithOfflineCache()
+            final Response response = okHttpClientProvider.getNonOAuthBased()
                     .newCall(new Request.Builder()
                             .url(srtUrl)
                             .get()

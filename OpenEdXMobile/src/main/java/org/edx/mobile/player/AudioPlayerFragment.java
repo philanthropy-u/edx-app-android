@@ -55,6 +55,7 @@ import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.DeviceSettingUtil;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.util.OrientationDetector;
+import org.edx.mobile.util.ParseSRT;
 import org.edx.mobile.util.UiUtil;
 import org.edx.mobile.util.Version;
 import org.edx.mobile.view.CourseBaseActivity;
@@ -70,7 +71,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import subtitleFile.Caption;
-import subtitleFile.FormatSRT;
 import subtitleFile.TimedTextObject;
 
 /**
@@ -1204,8 +1204,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                     for (String thisKey : localHashMap.keySet()) {
                         InputStream localInputStream = localHashMap.get(thisKey);
                         if (localInputStream != null) {
-                            TimedTextObject localTimedTextObject =
-                                    new FormatSRT().parseFile("temp.srt", localInputStream);
+                            TimedTextObject localTimedTextObject = new ParseSRT().parse("temp.srt", localInputStream);
                             srtList.put(thisKey, localTimedTextObject);
                             localInputStream.close();
                         }
