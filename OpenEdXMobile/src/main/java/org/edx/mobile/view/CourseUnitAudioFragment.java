@@ -2,8 +2,6 @@ package org.edx.mobile.view;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -176,9 +174,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
                 break;
             case DOWNLOADED:
                 menuItem.setVisible(true);
-                menuItem.setIcon(R.drawable.ic_done);
-                Drawable drawable = menuItem.getIcon();
-                drawable.setTint(Color.WHITE);
+                menuItem.setIcon(R.drawable.ic_done_white);
                 break;
             case ONLINE:
                 menuItem.setVisible(true);
@@ -199,7 +195,6 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
         messageContainer = v.findViewById(R.id.message_container);
         transcriptListView = (ListView) v.findViewById(R.id.transcript_listview);
 
-        Log.d("TEST_TAG", "ONcreate");
         return v;
     }
 
@@ -366,7 +361,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
     private void checkAudioStatusAndPlay(AudioBlockModel unit) {
         final DownloadEntry entry = unit.getDownloadEntry(environment.getStorage());
         if (!checkDownloadEntry(entry)) {
-            if(playerFragment != null){
+            if (playerFragment != null) {
                 playerFragment.setAudioNotObtainable();
             }
             return;
