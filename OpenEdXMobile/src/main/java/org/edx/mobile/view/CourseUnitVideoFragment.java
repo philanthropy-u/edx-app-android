@@ -2,8 +2,6 @@ package org.edx.mobile.view;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -152,7 +150,7 @@ public class CourseUnitVideoFragment extends CourseUnitFragment
                             updateDownloadState(menuItem, DownloadEntry.DownloadedState.DOWNLOADING);
                         } else if (state == DownloadEntry.DownloadedState.DOWNLOADED) {
                             updateDownloadState(menuItem, DownloadEntry.DownloadedState.DOWNLOADED);
-                        }else {
+                        } else {
                             // not yet downloaded
                             updateDownloadState(menuItem, DownloadEntry.DownloadedState.ONLINE);
                         }
@@ -174,9 +172,7 @@ public class CourseUnitVideoFragment extends CourseUnitFragment
                 break;
             case DOWNLOADED:
                 menuItem.setVisible(true);
-                menuItem.setIcon(R.drawable.ic_done);
-                Drawable drawable = menuItem.getIcon();
-                drawable.setTint(Color.WHITE);
+                menuItem.setIcon(R.drawable.ic_done_white);
                 break;
             case ONLINE:
                 menuItem.setVisible(true);
@@ -619,7 +615,7 @@ public class CourseUnitVideoFragment extends CourseUnitFragment
             if (v != null) {
                 // mark this as partially watches, as playing has started
                 ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(getPlaybackTime(offset));
-                DatabaseFactory.getInstance( DatabaseFactory.TYPE_DATABASE_NATIVE).updateMediaLastPlayedOffset(v.blockId, offset,
+                DatabaseFactory.getInstance(DatabaseFactory.TYPE_DATABASE_NATIVE).updateMediaLastPlayedOffset(v.blockId, offset,
                         setCurrentPositionCallback);
             }
         } catch (Exception ex) {
