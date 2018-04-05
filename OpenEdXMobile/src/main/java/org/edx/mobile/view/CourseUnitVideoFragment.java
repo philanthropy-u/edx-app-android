@@ -45,6 +45,7 @@ import org.edx.mobile.player.TranscriptListener;
 import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.services.ViewPagerDownloadManager;
 import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.ListViewSmoothScrollHelper;
 import org.edx.mobile.util.MediaConsentUtils;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.TranscriptAdapter;
@@ -791,7 +792,7 @@ public class CourseUnitVideoFragment extends CourseUnitFragment
             transcriptAdapter.unselectAll();
             transcriptAdapter.select(subtitleIndex);
             transcriptAdapter.notifyDataSetChanged();
-            transcriptListView.smoothScrollToPositionFromTop(subtitleIndex, (int) topOffset);
+            ListViewSmoothScrollHelper.smoothScrollToPosition(transcriptListView, subtitleIndex);
         }
     }
 
