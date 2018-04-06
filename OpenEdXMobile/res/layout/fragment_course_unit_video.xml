@@ -5,7 +5,7 @@
     android:id="@+id/course_unit_video"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/grey"
     android:baselineAligned="false"
     android:orientation="vertical">
 
@@ -57,15 +57,15 @@
         android:id="@+id/transcript_listview_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="-2dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="24dp"
         android:layout_weight="1"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:layout_marginBottom="-2dp"
+        android:layout_marginLeft="@dimen/transcripts_container_margin_horizontal"
+        android:layout_marginRight="@dimen/transcripts_container_margin_horizontal"
+        android:layout_marginTop="@dimen/transcripts_container_margin_top"
+        android:paddingLeft="@dimen/transcripts_container_margin_horizontal"
+        android:paddingRight="@dimen/transcripts_container_margin_horizontal"
         app:cardBackgroundColor="@color/white"
-        app:cardElevation="6dp">
+        app:cardElevation="@dimen/transcripts_card_elevation">
 
         <ListView
             android:id="@+id/transcript_listview"
