@@ -51,7 +51,7 @@
                         style="@style/triogrotesk_bold_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="20dp"
                         android:gravity="center_horizontal"
                         android:text="@string/app_full_name"
                         android:textAllCaps="true"
@@ -67,7 +67,7 @@
                     android:padding="11dp">
 
                     <TextView
-                        style="@style/regular_white_text"
+                        style="@style/bold_white_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -153,7 +153,7 @@
                             layout="@layout/panel_social_auth" />
                     </LinearLayout>
 
-                    <LinearLayout
+                   <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -165,7 +165,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/need_account"
-                            android:textColor="@color/grey_text"
+                            android:textColor="@color/philu_primary"
                             android:textSize="@dimen/custom_edx_small" />
 
                         <TextView
@@ -185,7 +185,7 @@
 
                     <TextView
                         android:id="@+id/end_user_agreement_tv"
-                        style="@style/regular_text"
+                        style="@style/semibold_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
