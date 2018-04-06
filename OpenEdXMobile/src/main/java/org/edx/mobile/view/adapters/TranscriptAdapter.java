@@ -19,9 +19,9 @@ import subtitleFile.Caption;
 
 public class TranscriptAdapter extends BaseListAdapter<Caption> {
     @ColorInt
-    private final int SELECTED_TRANSCRIPT_COLOR = ContextCompat.getColor(getContext(), R.color.edx_brand_gray_dark);
+    private final int SELECTED_TRANSCRIPT_COLOR = ContextCompat.getColor(getContext(), R.color.custom_dark_gray);
     @ColorInt
-    private final int UNSELECTED_TRANSCRIPT_COLOR = ContextCompat.getColor(getContext(), R.color.edx_brand_primary_base);
+    private final int UNSELECTED_TRANSCRIPT_COLOR = ContextCompat.getColor(getContext(), R.color.philu_light_grey);
 
     @Inject
     public TranscriptAdapter(Context context, IEdxEnvironment environment) {

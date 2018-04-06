@@ -153,16 +153,35 @@
                             layout="@layout/panel_social_auth" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/by_signing_up_tv"
-                        style="@style/regular_text"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
                         android:layout_gravity="center"
-                        android:padding="6dp"
-                        android:text="@string/by_signing_up"
-                        android:textColor="@color/grey_text"
-                        android:textSize="@dimen/custom_edx_small" />
+                        android:padding="6dp">
+
+                        <TextView
+                            style="@style/regular_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/need_account"
+                            android:textColor="@color/grey_text"
+                            android:textSize="@dimen/custom_edx_small" />
+
+                        <TextView
+                            android:id="@+id/by_signing_up_tv"
+                            style="@style/semibold_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginLeft="3dp"
+                            android:background="@drawable/selectable_box_overlay"
+                            android:focusable="true"
+                            android:text="@string/go_to_desktop"
+                            android:textColor="@color/text_navigation"
+                            android:textSize="@dimen/custom_edx_small" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/end_user_agreement_tv"
