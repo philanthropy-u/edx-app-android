@@ -1168,7 +1168,7 @@ public class AudioPlayerFragment extends BaseFragment implements IPlayerListener
                     for (Caption subtitle : subtitles) {
                         int startMillis = subtitle.start.getMseconds();
                         int endMillis = subtitle.end.getMseconds();
-                        if (currentPos >= startMillis && currentPos <= endMillis) {
+                        if (currentPos >= startMillis && currentPos < endMillis) {
                             setClosedCaptionData(closedCaptionsEnabled ? subtitle : null);
                             if (transcriptListener != null) {
                                 transcriptListener.updateSelection(currentSubtitleIndex);
