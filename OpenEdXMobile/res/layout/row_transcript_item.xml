@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
+    android:lineSpacingExtra="@dimen/transcripts_line_spacing"
     android:minHeight="@dimen/transcript_row_height"
     android:paddingBottom="@dimen/widget_margin"
     android:paddingEnd="@dimen/widget_margin_double"

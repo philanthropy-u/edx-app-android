@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -44,6 +45,7 @@ import org.edx.mobile.player.TranscriptListener;
 import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.services.ViewPagerDownloadManager;
 import org.edx.mobile.util.AppConstants;
+import org.edx.mobile.util.ListViewSmoothScrollHelper;
 import org.edx.mobile.util.MediaConsentUtils;
 import org.edx.mobile.util.NetworkUtil;
 import org.edx.mobile.view.adapters.TranscriptAdapter;
@@ -78,6 +80,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
     private Runnable playPending;
     private final Handler playHandler = new Handler();
     private View messageContainer;
+    private CardView transcriptListViewUnit;
     private ListView transcriptListView;
     private TranscriptAdapter transcriptAdapter;
 
@@ -193,6 +196,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_course_unit_audio, container, false);
         messageContainer = v.findViewById(R.id.message_container);
+        transcriptListViewUnit = (CardView) v.findViewById(R.id.transcript_listview_container);
         transcriptListView = (ListView) v.findViewById(R.id.transcript_listview);
 
         return v;
@@ -731,13 +735,16 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             messageContainer.setVisibility(View.GONE);
             transcriptListView.setVisibility(View.GONE);
+            transcriptListViewUnit.setVisibility(View.GONE);
         } else {
             if (transcriptAdapter == null) {
                 messageContainer.setVisibility(View.VISIBLE);
                 transcriptListView.setVisibility(View.GONE);
+                transcriptListViewUnit.setVisibility(View.GONE);
                 initTranscriptListView();
             } else {
                 messageContainer.setVisibility(View.GONE);
+                transcriptListViewUnit.setVisibility(View.VISIBLE);
                 transcriptListView.setVisibility(View.VISIBLE);
 
                 // Calculating the offset required for centralizing the current transcript item
@@ -780,7 +787,7 @@ public class CourseUnitAudioFragment extends CourseUnitFragment
             transcriptAdapter.unselectAll();
             transcriptAdapter.select(subtitleIndex);
             transcriptAdapter.notifyDataSetChanged();
-            transcriptListView.smoothScrollToPositionFromTop(subtitleIndex, (int) topOffset);
+            ListViewSmoothScrollHelper.smoothScrollToPosition(transcriptListView, subtitleIndex);
         }
     }
 
