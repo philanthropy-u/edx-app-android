@@ -1,25 +1,20 @@
 package org.edx.mobile.util;
 
-import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 /**
  * Created by Zohaib on 4/5/2018.
  */
 
-public class ListViewSmoothScrollHelper extends ListView{
-    public ListViewSmoothScrollHelper(Context context) {
-        super(context);
-    }
+public class ListViewSmoothScrollHelper {
 
     public static void smoothScrollToPosition(final AbsListView view, final int position) {
         View child = getChildAtPosition(view, position);
         // There's no need to scroll if child is already at top or view is already scrolled to its end
-        if ((child != null) && ((child.getTop() == 0) || ((child.getTop() > 0) && !view.canScrollVertically(1)))) {
+        if (child != null && ((child.getTop() == 0) || ((child.getTop() > 0) && !view.canScrollVertically(1)))) {
             return;
         }
 
