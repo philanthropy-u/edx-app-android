@@ -81,8 +81,8 @@
     <!-- Error during log in. -->
     <string name="login_failed">Please make sure that your user name or e-mail address and password are correct and try again.</string>
     <string name="by_signing_up">Need an account? Go to the desktop version </string>
-    <string name="need_account">Need an account? </string>
-    <string name="go_to_desktop">Go to the desktop version </string>
+    <string name="need_account" tools:ignore="MissingTranslation">Need an account? </string>
+    <string name="go_to_desktop" tools:ignore="MissingTranslation">Go to the desktop version </string>
     <string name="licensing_agreement">{platform_name} Terms of Service and Honor Code</string>
     <string name="login_title">Sign In</string>
     <!-- Accessible content description of close button on Sign in and Sign up screen -->
