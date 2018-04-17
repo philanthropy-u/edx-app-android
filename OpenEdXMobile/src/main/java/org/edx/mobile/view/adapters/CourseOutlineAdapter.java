@@ -24,7 +24,6 @@ import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.DiscussionBlockModel;
-import org.edx.mobile.model.course.HasDownloadEntry;
 import org.edx.mobile.model.course.HtmlBlockModel;
 import org.edx.mobile.model.course.IBlock;
 import org.edx.mobile.model.course.VideoBlockModel;
@@ -130,24 +129,24 @@ public class CourseOutlineAdapter extends BaseAdapter {
         int type = getItemViewType(position);
 
         // FIXME: Re-enable row recycling in favor of better DB communication [MA-1640]
-        //if (convertView == null) {
-        switch (type) {
-            case SectionRow.ITEM: {
-                convertView = mInflater.inflate(R.layout.item_section_detail, parent, false);
-                // apply a tag to this list row
-                ViewHolder tag = getTag(convertView);
-                convertView.setTag(tag);
-                break;
-            }
-            case SectionRow.SECTION: {
-                convertView = mInflater.inflate(R.layout.item_section_header, parent, false);
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException(String.valueOf(type));
+        if (convertView == null) {
+            switch (type) {
+                case SectionRow.ITEM: {
+                    convertView = mInflater.inflate(R.layout.item_section_detail, parent, false);
+                    // apply a tag to this list row
+                    ViewHolder tag = getTag(convertView);
+                    convertView.setTag(tag);
+                    break;
+                }
+                case SectionRow.SECTION: {
+                    convertView = mInflater.inflate(R.layout.item_section_header, parent, false);
+                    break;
+                }
+                default: {
+                    throw new IllegalArgumentException(String.valueOf(type));
+                }
             }
         }
-        //}
 
         switch (type) {
             case SectionRow.ITEM: {
@@ -305,6 +304,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         if (downloadEntry.getDuration() > 0L) {
             viewHolder.subSectionDescriptionTV.setVisibility(View.VISIBLE);
             viewHolder.subSectionDescriptionTV.setText(downloadEntry.getDurationReadable());
+        } else {
+            viewHolder.subSectionDescriptionTV.setText(null);
         }
         if (downloadEntry.getSize() > 0L) {
             viewHolder.subSectionDescriptionTV.setVisibility(View.VISIBLE);
@@ -370,7 +371,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     }
 
-    private void getRowViewForContainer(ViewHolder viewHolder,
+    private void getRowViewForContainer(final ViewHolder viewHolder,
                                         final SectionRow row, final int position) {
         final CourseComponent currentCourseComponent = row.component;
         String courseId = currentCourseComponent.getCourseId();
@@ -391,7 +392,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
                 viewHolder.multipleItemsCV.setVisibility(View.GONE);
             } else {
-                viewHolder.subSectionDescriptionTV.append(String.format(Locale.getDefault(), " + %d %s",
+                viewHolder.subSectionDescriptionTV.setVisibility(View.VISIBLE);
+                viewHolder.subSectionDescriptionTV.setText(String.format(Locale.getDefault(), " + %d %s",
                         (blocks.size() - 1), context.getString(R.string.sub_topics_text)));
                 viewHolder.multipleItemsCV.setVisibility(View.VISIBLE);
             }
@@ -401,12 +403,17 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
         //This block is used to handle timeline marker and row title text color if current item is last accessed
         if (lastAccessedUnitPosition > position) {
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             viewHolder.timelineViewMarker.setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
+            viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         } else if (lastAccessedUnitPosition == position) {
             viewHolder.timelineViewMarker.setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.BOLD);
+        } else {
+            viewHolder.timelineViewMarker.setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_light_grey));
+            viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         }
 
         viewHolder.timelineViewMarker.setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
@@ -460,26 +467,15 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     //This function will tell what marker type should be used
     private int getTypeForTimelineMarker(int position) {
-        final SectionRow row = this.getItem(position);
-
-        int typeToReturn;
-
-        SectionRow previousRow = this.getItem(position - 1);
         SectionRow nextSectionRow = this.getItem(position + 1);
-        //no previous item
-        if (previousRow == null) {
-            return 0;
-        }
         //list has reached its end and we don't need to show end line
         if (nextSectionRow == null) {
-            typeToReturn = LineType.END;
+            return LineType.END;
         }
         //list is continuous so we should show start and end line of the timeline marker
         else {
-            typeToReturn = LineType.NORMAL;
+            return LineType.NORMAL;
         }
-
-        return typeToReturn;
     }
 
     private String getFormattedDueDate(final String date) throws IllegalArgumentException {
