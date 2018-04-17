@@ -381,21 +381,10 @@ public class CourseOutlineAdapter extends BaseAdapter {
         String sequentialId = path.get(2) == null ? "" : path.get(2).getDisplayName();
 
         viewHolder.blockTypeIcon.setVisibility(View.GONE);
-        List<IBlock> blocks = currentCourseComponent.getChildren();
         viewHolder.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_download_media);
+        viewHolder.subSectionTitleTV.setText(currentCourseComponent.getDisplayName());
+        viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
 
-        //This block will check and set Sub topics
-        if (blocks != null && blocks.size() > 0) {
-            viewHolder.subSectionTitleTV.setText(blocks.get(0).getDisplayName());
-            if (blocks.size() == 1) {
-                viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
-                viewHolder.multipleItemsCV.setVisibility(View.GONE);
-            } else {
-                viewHolder.subSectionDescriptionTV.append(String.format(Locale.getDefault(), " + %d %s",
-                        (blocks.size() - 1), context.getString(R.string.sub_topics_text)));
-                viewHolder.multipleItemsCV.setVisibility(View.VISIBLE);
-            }
-        }
 
         //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
 
