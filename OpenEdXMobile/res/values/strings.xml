@@ -496,7 +496,7 @@
     <!-- Accessible content description of create account button on Registration screen -->
     <string name="create_account_btn">Create my account button</string>
     <!-- Text shown while waiting for registration request -->
-    <string name="creating_account_text">Creating account...</string>
+    <string name="creating_account_text">Creating account…</string>
     <!-- Registration screen title -->
     <string name="register_title">Register</string>
     <!-- Text for successful registration with social token  -->
@@ -652,5 +652,10 @@
     <string name="no_downloadable_content" tools:ignore="MissingTranslation">No downloadable content available</string>
     <string name="coming_soon" tools:ignore="MissingTranslation">Coming Soon</string>
     <string name="media_download_status" tools:ignore="MissingTranslation">Media Download Status</string>
+
+    <string name="instructions_label" tools:ignore="MissingTranslation">Instruction:</string>
+    <string name="audio_label" tools:ignore="MissingTranslation">Audio:</string>
+    <string name="video_label" tools:ignore="MissingTranslation">Video:</string>
+    <string name="others_label" tools:ignore="MissingTranslation">Other:</string>
 
 </resources>

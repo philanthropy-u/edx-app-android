@@ -24,7 +24,6 @@ import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.BlockType;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.DiscussionBlockModel;
-import org.edx.mobile.model.course.HasDownloadEntry;
 import org.edx.mobile.model.course.HtmlBlockModel;
 import org.edx.mobile.model.course.IBlock;
 import org.edx.mobile.model.course.VideoBlockModel;
@@ -201,7 +200,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         final SectionRow row = this.getItem(position);
         final CourseComponent c = row.component;
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.subSectionTitleTV.setText(c.getDisplayName());
+        viewHolder.subSectionTitleTV.setText(c.getDisplayName(convertView.getContext()));
 
         if (!c.isContainer()) {
             getRowViewForLeaf(viewHolder, row, position);
