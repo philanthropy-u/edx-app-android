@@ -659,6 +659,7 @@ public class Player extends MediaPlayer implements OnErrorListener,
                     || state == PlayerState.STOPPED
                     || state == PlayerState.PLAYBACK_COMPLETE
                     || state == PlayerState.LAGGING) {
+                if(lastCurrentPosition <= super.getCurrentPosition())
                 lastCurrentPosition = super.getCurrentPosition();
             }
         } catch (Exception ex) {
