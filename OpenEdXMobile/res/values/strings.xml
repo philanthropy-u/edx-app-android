@@ -657,5 +657,6 @@
     <string name="audio_label" tools:ignore="MissingTranslation">Audio:</string>
     <string name="video_label" tools:ignore="MissingTranslation">Video:</string>
     <string name="others_label" tools:ignore="MissingTranslation">Other:</string>
+    <string name="text_label" tools:ignore="MissingTranslation">Text</string>
 
 </resources>

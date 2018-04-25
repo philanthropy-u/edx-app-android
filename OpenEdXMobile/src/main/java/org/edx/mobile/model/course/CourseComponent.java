@@ -119,7 +119,7 @@ public class CourseComponent implements IBlock, IPathNode {
                 }
             }
 
-            if (!TextUtils.isEmpty(this.name) && this.name.equalsIgnoreCase("Text")) {
+            if (!TextUtils.isEmpty(this.name) && this.name.equalsIgnoreCase(context.getString(R.string.text_label))) {
                 displayName.append(context.getString(R.string.instructions_label)).append(" ").append(parent.name);
             }
         } catch (Exception ex) {
