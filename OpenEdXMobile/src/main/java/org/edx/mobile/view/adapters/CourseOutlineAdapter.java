@@ -200,7 +200,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         final SectionRow row = this.getItem(position);
         final CourseComponent c = row.component;
         final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.subSectionTitleTV.setText(c.getDisplayName(convertView.getContext()));
+        viewHolder.subSectionTitleTV.setText(c.getDisplayName(context));
 
         if (!c.isContainer()) {
             getRowViewForLeaf(viewHolder, row, position);
