@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.vipulasri.timelineview.LineType;
@@ -73,6 +74,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     private int lastAccessedUnitPosition = -1;
     public Integer selectedItemPosition;
+    LinearLayout.LayoutParams timelineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
+    private final int TIMELINE_DEFAULT_ID = View.generateViewId();
 
     public CourseOutlineAdapter(Context context, Config config, IDatabase dbStore, IStorage storage,
                                 DownloadListener listener) {
@@ -129,24 +132,24 @@ public class CourseOutlineAdapter extends BaseAdapter {
         int type = getItemViewType(position);
 
         // FIXME: Re-enable row recycling in favor of better DB communication [MA-1640]
-        //if (convertView == null) {
-        switch (type) {
-            case SectionRow.ITEM: {
-                convertView = mInflater.inflate(R.layout.item_section_detail, parent, false);
-                // apply a tag to this list row
-                ViewHolder tag = getTag(convertView);
-                convertView.setTag(tag);
-                break;
-            }
-            case SectionRow.SECTION: {
-                convertView = mInflater.inflate(R.layout.item_section_header, parent, false);
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException(String.valueOf(type));
+        if (convertView == null) {
+            switch (type) {
+                case SectionRow.ITEM: {
+                    convertView = mInflater.inflate(R.layout.item_section_detail, parent, false);
+                    // apply a tag to this list row
+                    ViewHolder tag = getTag(convertView);
+                    convertView.setTag(tag);
+                    break;
+                }
+                case SectionRow.SECTION: {
+                    convertView = mInflater.inflate(R.layout.item_section_header, parent, false);
+                    break;
+                }
+                default: {
+                    throw new IllegalArgumentException(String.valueOf(type));
+                }
             }
         }
-        //}
 
         switch (type) {
             case SectionRow.ITEM: {
@@ -217,7 +220,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
                                    final SectionRow row, final int position) {
         final CourseComponent unit = row.component;
         viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
-        viewHolder.timelineViewMarker.setVisibility(View.GONE);
+        viewHolder.timelineContainer.setVisibility(View.GONE);
         viewHolder.blockTypeIcon.setVisibility(View.VISIBLE);
         if (selectedItemPosition == position) {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.white));
@@ -384,24 +387,30 @@ public class CourseOutlineAdapter extends BaseAdapter {
         viewHolder.subSectionTitleTV.setText(currentCourseComponent.getDisplayName());
         viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
 
+        int markerType = getTypeForTimelineMarker(position);
+        viewHolder.timelineContainer.removeAllViews();
+        viewHolder.timelineContainer.addView(getTimeLineView(markerType));
 
         //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
 
         //This block is used to handle timeline marker and row title text color if current item is last accessed
         if (lastAccessedUnitPosition > position) {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
-            viewHolder.timelineViewMarker.setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         } else if (lastAccessedUnitPosition == position) {
-            viewHolder.timelineViewMarker.setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
+            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.BOLD);
+        }else{
+            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_light_grey));
+            viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         }
+        ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
 
-        viewHolder.timelineViewMarker.setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
 
         //Manage if the line should follow towards next row or not (NO for the last row) on base of obtained marker type
-        int markerType = getTypeForTimelineMarker(position);
-        viewHolder.timelineViewMarker.initLine(markerType);
 
         // This check will check if item is selected through long item click on list and mark view changes
         if (selectedItemPosition == position) {
@@ -532,19 +541,19 @@ public class CourseOutlineAdapter extends BaseAdapter {
         holder.sectionTitleTV = (TextView) convertView.findViewById(R.id.section_title);
         holder.subSectionTitleTV = (TextView) convertView.findViewById(R.id.subsection_title_tv);
         holder.subSectionDescriptionTV = (TextView) convertView.findViewById(R.id.subsection_description);
-        holder.timelineViewMarker = (TimelineView) convertView.findViewById(R.id.subsection_timeline_marker);
         holder.courseAvailabilityStatusIcon = (IconImageViewXml) convertView.findViewById(R.id.course_availability_status_icon);
         holder.multipleItemsCV = (CardView) convertView.findViewById(R.id.multiple_items_cv);
         holder.blockTypeIcon = (IconImageViewXml) convertView.findViewById(R.id.block_type_icon);
         holder.cardViewContainer = (FrameLayout) convertView.findViewById(R.id.card_holder);
         holder.rowCardView = (CardView) convertView.findViewById(R.id.subsection_row_cv);
-
+        holder.timelineContainer = (LinearLayout) convertView.findViewById(R.id.timeline_container);
+        holder.timelineContainer.addView(getTimeLineView(LineType.NORMAL));
         return holder;
     }
 
     public static class ViewHolder {
         TextView subSectionTitleTV, sectionTitleTV, subSectionDescriptionTV;
-        TimelineView timelineViewMarker;
+        LinearLayout timelineContainer;
         IconImageViewXml courseAvailabilityStatusIcon, blockTypeIcon;
         CardView multipleItemsCV;
         FrameLayout cardViewContainer;
@@ -612,4 +621,19 @@ public class CourseOutlineAdapter extends BaseAdapter {
         notifyDataSetChanged();
 
     }
+
+    private TimelineView getTimeLineView(int type)
+    {
+        TimelineView timeLine = new TimelineView(context , null);
+        timeLine.setLayoutParams(timelineParams);
+        timeLine.setId(TIMELINE_DEFAULT_ID);
+        timeLine.setLineSize((int)context.getResources().getDimension(R.dimen.timeline_line_width));
+        timeLine.setMarkerSize((int)context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+        timeLine.setStartLine(ContextCompat.getColor(context, R.color.edx_input_border_color ), type);
+        timeLine.setEndLine(ContextCompat.getColor(context, R.color.edx_input_border_color ), type);
+
+        return timeLine;
+
+    }
+
 }
