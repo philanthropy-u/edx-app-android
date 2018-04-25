@@ -1,9 +1,9 @@
 package org.edx.mobile.model.course;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import org.edx.mobile.R;
-import org.edx.mobile.base.MainApplication;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.Filter;
 import org.edx.mobile.model.api.IPathNode;
@@ -35,14 +35,14 @@ public class CourseComponent implements IBlock, IPathNode {
     private String format;
     private String dueDate;
 
-    public CourseComponent(){}
+    public CourseComponent() {
+    }
 
     /**
-     *
      * @param blockModel
-     * @param parent  is null if and only if this is the root
+     * @param parent     is null if and only if this is the root
      */
-    public CourseComponent(BlockModel blockModel, CourseComponent parent){
+    public CourseComponent(BlockModel blockModel, CourseComponent parent) {
         this.id = blockModel.id;
         this.blockId = blockModel.blockId;
         this.type = blockModel.type;
@@ -50,17 +50,17 @@ public class CourseComponent implements IBlock, IPathNode {
         this.graded = blockModel.graded;
         this.blockUrl = blockModel.studentViewUrl;
         this.webUrl = blockModel.lmsWebUrl;
-        this.multiDevice =  blockModel.studentViewMultiDevice;
+        this.multiDevice = blockModel.studentViewMultiDevice;
         this.format = blockModel.format;
         this.dueDate = blockModel.dueDate;
         this.blockCount = blockModel.blockCounts == null ? new BlockCount() : blockModel.blockCounts;
         this.parent = parent;
-        if ( parent == null){
+        if (parent == null) {
             this.root = this;
         } else {
             parent.getChildren().add(this);
             //we cache the root to improve the performance
-            this.root = (CourseComponent)parent.getRoot();
+            this.root = (CourseComponent) parent.getRoot();
         }
     }
 
@@ -96,10 +96,37 @@ public class CourseComponent implements IBlock, IPathNode {
 
     @Override
     public String getDisplayName() {
-        if (TextUtils.isEmpty(name)) {
-            return MainApplication.instance().getString(R.string.untitled_block);
+        return this.name;
+    }
+
+    public String getDisplayName(Context context) {
+        StringBuilder displayName = new StringBuilder();
+        try {
+            if (TextUtils.isEmpty(this.name)) {
+                switch (type) {
+                    case HTML:
+                        displayName.append(context.getString(R.string.instructions_label)).append(" ").append(parent.name);
+                        break;
+                    case AUDIO:
+                        displayName.append(context.getString(R.string.audio_label)).append(" ").append(parent.name);
+                        break;
+                    case VIDEO:
+                        displayName.append(context.getString(R.string.video_label)).append(" ").append(parent.name);
+                        break;
+                    default:
+                        displayName.append(context.getString(R.string.others_label)).append(" ").append(parent.name);
+                        break;
+                }
+            }
+
+            if (!TextUtils.isEmpty(this.name) && this.name.equalsIgnoreCase(context.getString(R.string.text_label))) {
+                displayName.append(context.getString(R.string.instructions_label)).append(" ").append(parent.name);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        return name;
+
+        return displayName.length() > 0 ? displayName.toString() : this.name;
     }
 
     @Override
@@ -158,7 +185,7 @@ public class CourseComponent implements IBlock, IPathNode {
     }
 
     @Override
-    public CourseComponent getRoot(){
+    public CourseComponent getRoot() {
         return root;
     }
 
@@ -171,20 +198,21 @@ public class CourseComponent implements IBlock, IPathNode {
         this.multiDevice = multiDevice;
     }
 
-    public boolean isContainer(){
+    public boolean isContainer() {
         return type != null ? type.isContainer() : (children != null && children.size() > 0);
     }
 
     /**
      * get direct children who have child.  it is not based on the block type, but on
      * the real tree structure.
+     *
      * @return
      */
-    public List<CourseComponent> getChildContainers(){
+    public List<CourseComponent> getChildContainers() {
         List<CourseComponent> childContainers = new ArrayList<>();
-        if ( children != null ){
-            for(CourseComponent c : children){
-                if ( c.isContainer() )
+        if (children != null) {
+            for (CourseComponent c : children) {
+                if (c.isContainer())
                     childContainers.add(c);
             }
         }
@@ -194,13 +222,14 @@ public class CourseComponent implements IBlock, IPathNode {
     /**
      * get direct children who is leaf.  it is not based on the block type, but on
      * the real tree structure.
+     *
      * @return
      */
-    public List<CourseComponent> getChildLeafs(){
+    public List<CourseComponent> getChildLeafs() {
         List<CourseComponent> childLeafs = new ArrayList<>();
-        if ( children != null ){
-            for(CourseComponent c : children){
-                if ( !c.isContainer() )
+        if (children != null) {
+            for (CourseComponent c : children) {
+                if (!c.isContainer())
                     childLeafs.add(c);
             }
         }
@@ -210,15 +239,15 @@ public class CourseComponent implements IBlock, IPathNode {
     /**
      * recursively find the first node by matcher. return null if get nothing.
      */
-    public CourseComponent find(Filter<CourseComponent> matcher){
-        if ( matcher.apply(this ) )
+    public CourseComponent find(Filter<CourseComponent> matcher) {
+        if (matcher.apply(this))
             return this;
-        if ( !isContainer() )
+        if (!isContainer())
             return null;
         CourseComponent found = null;
-        for(CourseComponent c : children){
+        for (CourseComponent c : children) {
             found = c.find(matcher);
-            if ( found != null )
+            if (found != null)
                 return found;
         }
         return null;
@@ -334,78 +363,81 @@ public class CourseComponent implements IBlock, IPathNode {
 
     /**
      * used for navigation.
+     *
      * @return <code>true</code> if it is the last child of direct parent. or it does not has direct parent
-     *         <code>false</code> if it is not
+     * <code>false</code> if it is not
      */
-    public boolean isLastChild(){
-        if ( parent == null )
+    public boolean isLastChild() {
+        if (parent == null)
             return true;
         List<IBlock> sibling = parent.getChildren();
-        if ( sibling == null ) {
+        if (sibling == null) {
             return false;  //it wont happen. TODO - should we log here?
         }
-        return sibling.indexOf(this) == sibling.size() -1;
+        return sibling.indexOf(this) == sibling.size() - 1;
     }
 
     /**
      * we get all the leaves below this node.  if this node itself is leaf,
      * just add it to list
+     *
      * @param leaves
      */
-    public void fetchAllLeafComponents(List<CourseComponent> leaves, EnumSet<BlockType> types){
-         if ( !isContainer() && types.contains(type)){
-             leaves.add(this);
-         } else {
-             for( CourseComponent comp : children ){
-                 comp.fetchAllLeafComponents(leaves, types);
-             }
-         }
+    public void fetchAllLeafComponents(List<CourseComponent> leaves, EnumSet<BlockType> types) {
+        if (!isContainer() && types.contains(type)) {
+            leaves.add(this);
+        } else {
+            for (CourseComponent comp : children) {
+                comp.fetchAllLeafComponents(leaves, types);
+            }
+        }
     }
 
     /**
      * get the ancestor based on level, level = 0, means itself.
      * if level is out of the boundary, just return the toppest one
+     *
      * @param level
      * @return it will never return null.
      */
-    public CourseComponent getAncestor(int level){
-        if ( parent == null || level == 0 )
+    public CourseComponent getAncestor(int level) {
+        if (parent == null || level == 0)
             return this;
 
         IBlock root = parent;
-        while ( level != 0  && root.getParent() != null ){
+        while (level != 0 && root.getParent() != null) {
             root = root.getParent();
             level--;
         }
-        return (CourseComponent)root;
+        return (CourseComponent) root;
     }
 
     /**
      * get ancestor with give blockType, starting from itself
      */
-    public CourseComponent getAncestor(EnumSet<BlockType> types){
-        if( types.contains(type) )
+    public CourseComponent getAncestor(EnumSet<BlockType> types) {
+        if (types.contains(type))
             return this;
         IBlock ancestor = parent;
-        if ( ancestor == null )
+        if (ancestor == null)
             return null;
-        do{
-           if ( types.contains( ancestor.getType() ) )
-               return (CourseComponent) ancestor;
-        }while ((ancestor = ancestor.getParent()) != null );
+        do {
+            if (types.contains(ancestor.getType()))
+                return (CourseComponent) ancestor;
+        } while ((ancestor = ancestor.getParent()) != null);
         return null;
     }
 
     @Override
-    public boolean equals(Object obj){
-        if ( obj == null || !(obj instanceof CourseComponent) )
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof CourseComponent))
             return false;
-        CourseComponent other = (CourseComponent)obj;
+        CourseComponent other = (CourseComponent) obj;
         return this.id.equals(other.id);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return this.id.hashCode();
     }
 
@@ -413,22 +445,22 @@ public class CourseComponent implements IBlock, IPathNode {
     //// implement IPathNode interface, for backward compatibility only
     @Override
     public boolean isChapter() {
-        return  getType() == BlockType.CHAPTER;
+        return getType() == BlockType.CHAPTER;
     }
 
     @Override
     public boolean isSequential() {
-        return  getType() == BlockType.SEQUENTIAL;
+        return getType() == BlockType.SEQUENTIAL;
     }
 
     @Override
     public boolean isVertical() {
-        return  getType() == BlockType.VERTICAL;
+        return getType() == BlockType.VERTICAL;
     }
 
     @Override
     public String getCategory() {
-        return  getType().name().toLowerCase(Locale.ENGLISH);
+        return getType().name().toLowerCase(Locale.ENGLISH);
     }
 
     /**
@@ -453,11 +485,11 @@ public class CourseComponent implements IBlock, IPathNode {
     }
 
     @Override
-    public String getCourseId(){
-        if( courseId == null || courseId.length() == 0 ){
+    public String getCourseId() {
+        if (courseId == null || courseId.length() == 0) {
             //root should always has a course id, add the check to avoid loop
-            if ( root == this ){
-                logger.debug( "root does not has a course id set!!! for " + id);
+            if (root == this) {
+                logger.debug("root does not has a course id set!!! for " + id);
                 return "";
             }
             return root.getCourseId();
@@ -465,33 +497,34 @@ public class CourseComponent implements IBlock, IPathNode {
             return courseId;
         }
     }
+
     @Override
-    public void setCourseId(String courseId){
+    public void setCourseId(String courseId) {
         this.courseId = courseId;
     }
 
     /**
      * calculate and construct a Path object
      */
-    public BlockPath getPath(){
+    public BlockPath getPath() {
         BlockPath path = new BlockPath();
         path.addPathNodeToPathFront(this);
         CourseComponent nodeAbove = parent;
-        while ( nodeAbove != null ){
+        while (nodeAbove != null) {
             path.addPathNodeToPathFront(nodeAbove);
             nodeAbove = nodeAbove.getParent();
         }
         return path;
     }
 
-    public static CourseComponent getCommonAncestor(CourseComponent node1, CourseComponent node2){
+    public static CourseComponent getCommonAncestor(CourseComponent node1, CourseComponent node2) {
         List<CourseComponent> path1 = node1.getPath().getPath();
         List<CourseComponent> path2 = node2.getPath().getPath();
-        if ( path1.isEmpty() || path2.isEmpty() )
+        if (path1.isEmpty() || path2.isEmpty())
             return null;
-        for(int i = path1.size() -1; i >=0; i --){
+        for (int i = path1.size() - 1; i >= 0; i--) {
             CourseComponent comp1 = path1.get(i);
-            for(int j = path2.size() -1; j >=0; j --){
+            for (int j = path2.size() - 1; j >= 0; j--) {
                 CourseComponent comp2 = path2.get(j);
                 if (comp1.equals(comp2))
                     return comp1;
@@ -499,7 +532,6 @@ public class CourseComponent implements IBlock, IPathNode {
         }
         return null;
     }
-
 
 
 }
