@@ -523,6 +523,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 row.courseAvailabilityStatusIcon.setIcon(FontAwesomeIcons.fa_spinner);
                 row.courseAvailabilityStatusIcon.setIconAnimation(Animation.PULSE);
                 row.courseAvailabilityStatusIcon.setIconColorResource(R.color.white);
+                row.courseAvailabilityStatusIcon.setTag(null);
                 break;
             case DOWNLOADED:
                 row.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_done);
@@ -535,6 +536,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
                 row.courseAvailabilityStatusIcon.setImageResource(R.drawable.ic_download_media);
                 row.courseAvailabilityStatusIcon.setBackgroundColor(context.getResources().getColor(R.color.philu_blue_bg));
                 row.courseAvailabilityStatusIcon.setIconAnimation(Animation.NONE);
+                row.courseAvailabilityStatusIcon.setTag(null);
                 break;
         }
         row.courseAvailabilityStatusIcon.setOnClickListener(listener);
