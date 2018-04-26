@@ -15,7 +15,7 @@
         android:orientation="vertical"
         >
     </LinearLayout>
-    
+
     <FrameLayout
         android:id="@+id/card_holder"
         android:layout_width="match_parent"

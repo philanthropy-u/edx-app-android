@@ -227,6 +227,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
             viewHolder.rowCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.philu_primary));
         } else {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
+            viewHolder.rowCardView.setCardBackgroundColor(ContextCompat.getColor(context , R.color.white));
         }
 
         if (row.component instanceof VideoBlockModel) {
@@ -312,6 +313,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
             viewHolder.subSectionDescriptionTV.setVisibility(View.VISIBLE);
             viewHolder.subSectionDescriptionTV.append(String.format(Locale.getDefault(), " | %s",
                     MemoryUtil.format(context, downloadEntry.getSize())));
+        }else{
+            viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
         }
 
         dbStore.getWatchedStateForVideoId(downloadEntry.blockId,
@@ -372,7 +375,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     }
 
-    private void getRowViewForContainer(ViewHolder viewHolder,
+    private void getRowViewForContainer(final ViewHolder viewHolder,
                                         final SectionRow row, final int position) {
         final CourseComponent currentCourseComponent = row.component;
         String courseId = currentCourseComponent.getCourseId();
@@ -387,6 +390,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         viewHolder.subSectionTitleTV.setText(currentCourseComponent.getDisplayName());
         viewHolder.subSectionDescriptionTV.setVisibility(View.GONE);
 
+
+        //Manage if the line should follow towards next row or not (NO for the last row) on base of obtained marker type
         int markerType = getTypeForTimelineMarker(position);
         viewHolder.timelineContainer.removeAllViews();
         viewHolder.timelineContainer.addView(getTimeLineView(markerType));
@@ -394,29 +399,38 @@ public class CourseOutlineAdapter extends BaseAdapter {
         //This block is used to handle timeline marker and row title text color for items before last accessed on base of last accessed item
 
         //This block is used to handle timeline marker and row title text color if current item is last accessed
+        int currentTitleColor;
         if (lastAccessedUnitPosition > position) {
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
+            currentTitleColor = ContextCompat.getColor(context, R.color.philu_primary);
+//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         } else if (lastAccessedUnitPosition == position) {
             ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
+            currentTitleColor = ContextCompat.getColor(context, R.color.philu_primary);
+
+//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.BOLD);
         }else{
             ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
-            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_light_grey));
+//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_light_grey));
+            currentTitleColor = ContextCompat.getColor(context, R.color.philu_light_grey);
+
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         }
+        viewHolder.subSectionTitleTV.setTextColor(currentTitleColor);
+
         ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
-
-
-        //Manage if the line should follow towards next row or not (NO for the last row) on base of obtained marker type
 
         // This check will check if item is selected through long item click on list and mark view changes
         if (selectedItemPosition == position) {
             viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.white));
             viewHolder.rowCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.philu_primary));
+        }else{
+            viewHolder.subSectionTitleTV.setTextColor(currentTitleColor);
+            viewHolder.rowCardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
+
 
         final int totalDownloadableMedia = currentCourseComponent.getDownloadableMediaCount();
         // support video download for video type excluding the ones only viewable on web
