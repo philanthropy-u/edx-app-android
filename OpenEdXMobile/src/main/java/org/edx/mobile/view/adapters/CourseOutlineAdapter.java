@@ -74,7 +74,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     private int lastAccessedUnitPosition = -1;
     public Integer selectedItemPosition;
-    private final LinearLayout.LayoutParams timelineParams;
+    private final LinearLayout.LayoutParams TIMELINE_PARAMS;
     private final int TIMELINE_DEFAULT_ID;
 
     public CourseOutlineAdapter(Context context, Config config, IDatabase dbStore, IStorage storage,
@@ -87,7 +87,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = new ArrayList();
         selectedItemPosition = -1;
-        timelineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
+        TIMELINE_PARAMS = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
         TIMELINE_DEFAULT_ID = View.generateViewId();
     }
 
@@ -638,7 +638,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
     private TimelineView getTimeLineView(int type)
     {
         TimelineView timeLine = new TimelineView(context , null);
-        timeLine.setLayoutParams(timelineParams);
+        timeLine.setLayoutParams(TIMELINE_PARAMS);
         timeLine.setId(TIMELINE_DEFAULT_ID);
         timeLine.setLineSize((int)context.getResources().getDimension(R.dimen.timeline_line_width));
         timeLine.setMarkerSize((int)context.getResources().getDimension(R.dimen.timeline_marker_size_small));
