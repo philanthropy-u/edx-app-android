@@ -74,8 +74,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
 
     private int lastAccessedUnitPosition = -1;
     public Integer selectedItemPosition;
-    LinearLayout.LayoutParams timelineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
-    private final int TIMELINE_DEFAULT_ID = View.generateViewId();
+    private final LinearLayout.LayoutParams timelineParams;
+    private final int TIMELINE_DEFAULT_ID;
 
     public CourseOutlineAdapter(Context context, Config config, IDatabase dbStore, IStorage storage,
                                 DownloadListener listener) {
@@ -87,6 +87,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mData = new ArrayList();
         selectedItemPosition = -1;
+        timelineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , ViewGroup.LayoutParams.MATCH_PARENT);
+        TIMELINE_DEFAULT_ID = View.generateViewId();
     }
 
     @Override
@@ -402,25 +404,20 @@ public class CourseOutlineAdapter extends BaseAdapter {
         int currentTitleColor;
         if (lastAccessedUnitPosition > position) {
             currentTitleColor = ContextCompat.getColor(context, R.color.philu_primary);
-//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
-            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
+            setTimeLineMarkerSize(viewHolder.timelineContainer , (int)context.getResources().getDimension(R.dimen.timeline_marker_size_small));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         } else if (lastAccessedUnitPosition == position) {
-            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
+            setTimeLineMarkerSize(viewHolder.timelineContainer , (int) context.getResources().getDimension(R.dimen.timeline_marker_size_large));
             currentTitleColor = ContextCompat.getColor(context, R.color.philu_primary);
-
-//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_primary));
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.BOLD);
         }else{
-            ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize((int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
-//            viewHolder.subSectionTitleTV.setTextColor(ContextCompat.getColor(context, R.color.philu_light_grey));
+            setTimeLineMarkerSize(viewHolder.timelineContainer , (int) context.getResources().getDimension(R.dimen.timeline_marker_size_small));
             currentTitleColor = ContextCompat.getColor(context, R.color.philu_light_grey);
-
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         }
         viewHolder.subSectionTitleTV.setTextColor(currentTitleColor);
+        setTimeLineMarker(viewHolder.timelineContainer);
 
-        ((TimelineView)viewHolder.timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
 
         // This check will check if item is selected through long item click on list and mark view changes
         if (selectedItemPosition == position) {
@@ -647,9 +644,16 @@ public class CourseOutlineAdapter extends BaseAdapter {
         timeLine.setMarkerSize((int)context.getResources().getDimension(R.dimen.timeline_marker_size_small));
         timeLine.setStartLine(ContextCompat.getColor(context, R.color.edx_input_border_color ), type);
         timeLine.setEndLine(ContextCompat.getColor(context, R.color.edx_input_border_color ), type);
-
         return timeLine;
-
     }
 
+    private void setTimeLineMarkerSize(LinearLayout timelineContainer , int markerSize)
+    {
+        ((TimelineView)timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize(markerSize);
+    }
+
+    private void setTimeLineMarker(LinearLayout timelineContainer)
+    {
+        ((TimelineView)timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
+    }
 }
