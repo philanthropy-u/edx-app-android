@@ -53,7 +53,14 @@ public class AudioController extends PlayerController {
     private IconImageViewXml playPauseIcon;
     private SeekBar audioProgressSeekbar;
     protected Handler mHandler = new MessageHandler(this);
-
+    protected Handler playbackTimeHandler = new Handler();
+    protected Runnable playbackTimeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mCurrentTime.setText(stringForTime(position));
+        }
+    };
+    protected int position = 0;
 
     private static final Logger logger = new Logger(AudioController.class.getName());
 
@@ -177,7 +184,7 @@ public class AudioController extends PlayerController {
             return 0;
         }
 
-        int position = mPlayer.getCurrentPosition();
+        position = mPlayer.getCurrentPosition();
         int duration = mPlayer.getDuration();
         if (audioProgressSeekbar != null) {
             if (duration > 0) {
@@ -192,7 +199,7 @@ public class AudioController extends PlayerController {
         if (mEndTime != null)
             mEndTime.setText(stringForTime(duration));
         if (mCurrentTime != null)
-            mCurrentTime.setText(stringForTime(position));
+            playbackTimeHandler.post(playbackTimeRunnable);
 
         return position;
     }

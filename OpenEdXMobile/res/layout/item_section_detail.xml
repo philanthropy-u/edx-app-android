@@ -6,16 +6,15 @@
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal">
-
-    <com.github.vipulasri.timelineview.TimelineView
-        android:id="@+id/subsection_timeline_marker"
+    <LinearLayout
+        android:id="@+id/timeline_container"
         android:layout_width="@dimen/timeline_marker_size_large"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/edx_margin"
-        app:line="@color/edx_input_border_color"
-        app:lineSize="@dimen/timeline_line_width"
-        app:markerSize="@dimen/timeline_marker_size_small"
-        android:layout_marginLeft="@dimen/edx_margin" />
+        android:layout_marginLeft="@dimen/edx_margin"
+        android:orientation="vertical"
+        >
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/card_holder"
