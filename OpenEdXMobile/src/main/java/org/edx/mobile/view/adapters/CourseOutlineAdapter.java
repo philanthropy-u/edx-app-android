@@ -416,7 +416,7 @@ public class CourseOutlineAdapter extends BaseAdapter {
             viewHolder.subSectionTitleTV.setTypeface(null, Typeface.NORMAL);
         }
         viewHolder.subSectionTitleTV.setTextColor(currentTitleColor);
-        setTimeLineMarker(viewHolder.timelineContainer);
+        setTimeLineMarker(viewHolder.timelineContainer, R.drawable.ic_timeline_marker_filled);
 
 
         // This check will check if item is selected through long item click on list and mark view changes
@@ -652,8 +652,8 @@ public class CourseOutlineAdapter extends BaseAdapter {
         ((TimelineView)timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarkerSize(markerSize);
     }
 
-    private void setTimeLineMarker(LinearLayout timelineContainer)
+    private void setTimeLineMarker(LinearLayout timelineContainer, int drawableId)
     {
-        ((TimelineView)timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, R.drawable.ic_timeline_marker_filled));
+        ((TimelineView)timelineContainer.findViewById(TIMELINE_DEFAULT_ID)).setMarker(ContextCompat.getDrawable(context, drawableId));
     }
 }
