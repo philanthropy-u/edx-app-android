@@ -38,7 +38,6 @@ import org.edx.mobile.user.UserAPI;
 import org.edx.mobile.user.UserService;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.util.ResourceUtil;
-import org.edx.mobile.view.dialog.WebViewActivity;
 
 import de.greenrobot.event.EventBus;
 import retrofit2.Call;
@@ -195,7 +194,7 @@ public class NavigationFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 ((BaseFragmentActivity) getActivity()).closeDrawer();
-                startActivity(WebViewActivity.newIntent(getContext(), environment.getConfig().getSupportUrl(), getString(R.string.title_help_center)));
+                environment.getRouter().showWebViewActivity(getActivity(), environment.getConfig().getSupportUrl(), getString(R.string.title_help_center));
             }
         });
 
