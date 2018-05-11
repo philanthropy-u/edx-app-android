@@ -1,5 +1,6 @@
 package org.edx.mobile.view.dialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class WebViewActivity extends BaseFragmentActivity {
         webView.loadUrl(getIntent().getStringExtra(ARG_URL));
 
         final String title = getIntent().getStringExtra(ARG_TITLE);
-        if (!TextUtils.isEmpty(title)) {
+        if (null != getSupportActionBar() && !TextUtils.isEmpty(title)) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             setTitle(title);
         }

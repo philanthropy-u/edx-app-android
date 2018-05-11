@@ -75,6 +75,11 @@
                 android:id="@+id/drawer_option_account"
                 style="@style/drawer_option"
                 android:text="@string/title_account" />
+
+            <TextView
+                android:id="@+id/drawer_help_center"
+                style="@style/drawer_option"
+                android:text="@string/title_help_center" />
         </LinearLayout>
     </RelativeLayout>
 </layout>

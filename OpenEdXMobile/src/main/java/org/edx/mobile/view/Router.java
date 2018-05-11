@@ -415,6 +415,7 @@ public class Router {
         activity.startActivity(AccountActivity.newIntent(activity));
     }
 
+
     /**
      * Open an email client for user to write feedback
      *
