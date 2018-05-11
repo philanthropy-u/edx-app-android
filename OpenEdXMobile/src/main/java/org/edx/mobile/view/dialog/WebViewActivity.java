@@ -30,7 +30,6 @@ public class WebViewActivity extends BaseFragmentActivity {
                 .putExtra(ARG_TITLE, title);
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
