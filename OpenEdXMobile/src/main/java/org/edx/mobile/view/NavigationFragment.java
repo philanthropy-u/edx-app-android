@@ -32,10 +32,12 @@ import org.edx.mobile.module.analytics.AnalyticsRegistry;
 import org.edx.mobile.module.facebook.IUiLifecycleHelper;
 import org.edx.mobile.module.prefs.LoginPrefs;
 import org.edx.mobile.profiles.UserProfileActivity;
+import org.edx.mobile.services.EdxCookieManager;
 import org.edx.mobile.user.Account;
 import org.edx.mobile.user.ProfileImage;
 import org.edx.mobile.user.UserAPI;
 import org.edx.mobile.user.UserService;
+import org.edx.mobile.util.BrowserUtil;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.util.ResourceUtil;
 
@@ -194,7 +196,13 @@ public class NavigationFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 ((BaseFragmentActivity) getActivity()).closeDrawer();
-                environment.getRouter().showWebViewActivity(getActivity(), environment.getConfig().getSupportUrl(), getString(R.string.title_help_center));
+                BrowserUtil.open(getActivity(), environment.getConfig().getSupportUrl());
+                /*
+                  Clearing the cookies because browser may create/update cookies that may not work
+                  for the application session so by clearing we make sure that we update cookies once
+                  user comes back to app.
+                 */
+                EdxCookieManager.getSharedInstance(getContext()).clearWebWiewCookie();
             }
         });
 
