@@ -129,6 +129,8 @@
     <string name="label_settings">Settings</string>
     <!-- Title of Account screen -->
     <string name="title_account" tools:ignore="MissingTranslation">Account</string>
+     <!-- Title of Submit feedback -->
+    <string name="title_help_center" tools:ignore="MissingTranslation">Help Center</string>
 
     <!-- Help Dialog Place Holder messages -->
     <!-- Reset password alert dialog title -->

@@ -44,6 +44,7 @@ public class Config {
     private static final String SPEED_TEST_ENABLED = "SPEED_TEST_ENABLED";
     private static final String APP_UPDATE_URIS = "APP_UPDATE_URIS";
     private static final String ORGANIZATION_CODE = "ORGANIZATION_CODE";
+    private static final String SUPPORT_URL = "SUPPORT_URL";
 
     /* Composite configuration keys */
     private static final String COURSE_ENROLLMENT = "COURSE_ENROLLMENT";
@@ -499,6 +500,10 @@ public class Config {
 
     public String getYoutubeApiKey() {
         return getString(YOUTUBE_API_KEY);
+    }
+
+    public String getSupportUrl() {
+        return getString(SUPPORT_URL);
     }
 
     /**
