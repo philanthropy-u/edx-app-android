@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.1'
 
         repositories {
             jcenter()
@@ -12,10 +12,15 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion COMPILE_SDK_VERSION
-    buildToolsVersion BUILD_TOOLS_VERSION
 
     defaultConfig {
         minSdkVersion 4
+    }
+
+    buildTypes {
+        debug {}
+        debuggable {}
+        release {}
     }
 
     compileOptions {
@@ -25,5 +30,6 @@ android {
 }
 
 dependencies {
-    compile project(':android-iconify')
+    implementation project(':android-iconify')
+    implementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
 }
