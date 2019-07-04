@@ -47,8 +47,14 @@ public class IDownloadManagerImpl implements IDownloadManager {
                                 .getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                 long size = c.getLong(c
                         .getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                String filepath = c.getString(c
-                        .getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+                String filepath = null;
+                String downloadFileLocalUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                if (downloadFileLocalUri != null) {
+                    String path = Uri.parse(downloadFileLocalUri).getPath();
+                    if (path != null) {
+                        filepath = new File(path).getAbsolutePath();
+                    }
+                }
                 int status = c.getInt(c
                         .getColumnIndex(DownloadManager.COLUMN_STATUS));
 

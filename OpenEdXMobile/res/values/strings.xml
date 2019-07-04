@@ -661,4 +661,6 @@
     <string name="others_label" tools:ignore="MissingTranslation">Other:</string>
     <string name="text_label" tools:ignore="MissingTranslation">Text</string>
 
+    <string name="download_permission_rationale" tools:ignore="MissingTranslation">To download content, please allow app to access your storage</string>
+    <string name="download_permission_denied" tools:ignore="MissingTranslation">Storage permission is required to download content</string>
 </resources>

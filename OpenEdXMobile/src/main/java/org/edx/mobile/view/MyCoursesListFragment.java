@@ -1,8 +1,11 @@
 package org.edx.mobile.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
@@ -40,6 +44,7 @@ import org.edx.mobile.module.prefs.LoginPrefs;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
+import org.edx.mobile.util.PermissionUtil;
 import org.edx.mobile.view.adapters.MyCoursesAdapter;
 
 import java.util.ArrayList;
@@ -48,17 +53,23 @@ import java.util.List;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
 
 public class MyCoursesListFragment extends BaseFragment
         implements NetworkObserver, RefreshListener,
         LoaderManager.LoaderCallbacks<AsyncTaskResult<List<EnrolledCoursesResponse>>> {
 
     private static final int MY_COURSE_LOADER_ID = 0x905000;
+    private static final int RC_STORAGE_PERMISSION_COMPONENT = 401;
 
     private MyCoursesAdapter adapter;
     private FragmentMyCoursesListBinding binding;
     private final Logger logger = new Logger(getClass().getSimpleName());
     private boolean refreshOnResume = false;
+
+    @Nullable
+    private List<CourseComponent> mDownloadComponentModels;
 
     @Inject
     CourseManager courseManager;
@@ -106,10 +117,8 @@ public class MyCoursesListFragment extends BaseFragment
 
             @Override
             public void download(List<CourseComponent> models) {
-                MyCoursesListActivity activity = (MyCoursesListActivity) getActivity();
-                if (NetworkUtil.verifyDownloadPossible(activity)) {
-                    downloadManager.downloadMedia(models, activity, activity);
-                }
+                mDownloadComponentModels = models;
+                downloadComponents();
             }
 
             @Override
@@ -120,6 +129,51 @@ public class MyCoursesListFragment extends BaseFragment
         environment.getAnalyticsRegistry().trackScreenView(Analytics.Screens.MY_COURSES);
         EventBus.getDefault().register(this);
     }
+
+    @AfterPermissionGranted(RC_STORAGE_PERMISSION_COMPONENT)
+    private void downloadComponents() {
+        if (PermissionUtil.hasStoragePermission(getContext())) {
+            MyCoursesListActivity activity = (MyCoursesListActivity) getActivity();
+            if (mDownloadComponentModels != null && NetworkUtil.verifyDownloadPossible(activity)) {
+                downloadManager.downloadMedia(mDownloadComponentModels, activity, activity);
+            }
+            mDownloadComponentModels = null;
+        } else {
+            PermissionUtil.requestStoragePermission(
+                    MyCoursesListFragment.this,
+                    RC_STORAGE_PERMISSION_COMPONENT
+            );
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            Toast.makeText(getContext(),
+                    R.string.download_permission_denied,
+                    Toast.LENGTH_SHORT
+            ).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        super.onPermissionsDenied(requestCode, perms);
+        if (requestCode == RC_STORAGE_PERMISSION_COMPONENT) {
+            Toast.makeText(getContext(),
+                    R.string.download_permission_denied,
+                    Toast.LENGTH_SHORT
+            ).show();
+            MyCoursesListActivity activity = (MyCoursesListActivity) getActivity();
+            if (activity != null) {
+                activity.onDownloadFailedToStart();
+            }
+        }
+    }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

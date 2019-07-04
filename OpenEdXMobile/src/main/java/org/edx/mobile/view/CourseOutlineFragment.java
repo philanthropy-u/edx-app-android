@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -13,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.inject.Inject;
 import com.joanzapata.iconify.IconDrawable;
@@ -50,6 +51,7 @@ import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.LastAccessManager;
 import org.edx.mobile.services.MediaDownloadHelper;
 import org.edx.mobile.util.NetworkUtil;
+import org.edx.mobile.util.PermissionUtil;
 import org.edx.mobile.view.adapters.CourseOutlineAdapter;
 import org.edx.mobile.view.common.TaskProcessCallback;
 import org.edx.mobile.view.custom.IconImageViewXml;
@@ -58,6 +60,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
 
 public class CourseOutlineFragment extends BaseFragment implements LastAccessManager.LastAccessManagerCallback, MediaDownloadHelper.DownloadManagerCallback {
 
@@ -66,6 +70,9 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     static final int REQUEST_SHOW_COURSE_UNIT_DETAIL = 0;
     private static final int AUTOSCROLL_DELAY_MS = 500;
     private static final int SNACKBAR_SHOWTIME_MS = 5000;
+    private static final int RC_STORAGE_PERMISSION_COURSE = 400;
+    private static final int RC_STORAGE_PERMISSION_COMPONENT = 401;
+    private static final int RC_STORAGE_PERMISSION_VIDEO = 402;
 
     private CourseOutlineAdapter adapter;
     private TaskProcessCallback taskProcessCallback;
@@ -74,6 +81,14 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     private boolean isOnCourseOutline;
     private ActionMode deleteMode;
     private String lastAccessedComponentId;
+
+    @Nullable
+    private CourseComponent mDownloadCourseComponent;
+    @Nullable
+    private List<CourseComponent> mDownloadComponentModels;
+    @Nullable
+    private DownloadEntry mDownloadVideoEntry;
+
     @Inject
     LastAccessManager lastAccessManager;
 
@@ -180,11 +195,8 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                                     new View.OnClickListener() {
                                         @Override
                                         public void onClick(View downloadView) {
-                                            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
-                                            if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                                downloadManager.downloadMedia(courseComponent.getDownloadableMedia(), getActivity(),
-                                                        CourseOutlineFragment.this);
-                                            }
+                                            mDownloadCourseComponent = courseComponent;
+                                            downloadCourseComponent();
                                         }
                                     });
                         }
@@ -387,19 +399,14 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                     new CourseOutlineAdapter.DownloadListener() {
                         @Override
                         public void download(List<CourseComponent> models) {
-                            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
-                            if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                downloadManager.downloadMedia(models, getActivity(),
-                                        (MediaDownloadHelper.DownloadManagerCallback) getActivity());
-                            }
+                            mDownloadComponentModels = models;
+                            downloadComponents();
                         }
 
                         @Override
                         public void download(DownloadEntry videoData) {
-                            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
-                            if (NetworkUtil.verifyDownloadPossible(activity)) {
-                                downloadManager.downloadVideo(videoData, activity, activity);
-                            }
+                            mDownloadVideoEntry = videoData;
+                            downloadVideo();
                         }
 
                         @Override
@@ -407,6 +414,56 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
                             environment.getRouter().showDownloads(getActivity());
                         }
                     });
+        }
+    }
+
+    @AfterPermissionGranted(RC_STORAGE_PERMISSION_COURSE)
+    private void downloadCourseComponent() {
+        if (PermissionUtil.hasStoragePermission(getContext())) {
+            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+            if (mDownloadCourseComponent != null && NetworkUtil.verifyDownloadPossible(activity)) {
+                downloadManager.downloadMedia(mDownloadCourseComponent.getDownloadableMedia(), getActivity(),
+                        CourseOutlineFragment.this);
+            }
+            mDownloadCourseComponent = null;
+        } else {
+            PermissionUtil.requestStoragePermission(
+                    CourseOutlineFragment.this,
+                    RC_STORAGE_PERMISSION_COURSE
+            );
+        }
+    }
+
+    @AfterPermissionGranted(RC_STORAGE_PERMISSION_COMPONENT)
+    private void downloadComponents() {
+        if (PermissionUtil.hasStoragePermission(getContext())) {
+            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+            if (mDownloadComponentModels != null && NetworkUtil.verifyDownloadPossible(activity)) {
+                downloadManager.downloadMedia(mDownloadComponentModels, getActivity(),
+                        (MediaDownloadHelper.DownloadManagerCallback) getActivity());
+            }
+            mDownloadComponentModels = null;
+        } else {
+            PermissionUtil.requestStoragePermission(
+                    CourseOutlineFragment.this,
+                    RC_STORAGE_PERMISSION_COMPONENT
+            );
+        }
+    }
+
+    @AfterPermissionGranted(RC_STORAGE_PERMISSION_VIDEO)
+    private void downloadVideo() {
+        if (PermissionUtil.hasStoragePermission(getContext())) {
+            CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+            if (mDownloadVideoEntry != null && NetworkUtil.verifyDownloadPossible(activity)) {
+                downloadManager.downloadVideo(mDownloadVideoEntry, activity, activity);
+            }
+            mDownloadVideoEntry = null;
+        } else {
+            PermissionUtil.requestStoragePermission(
+                    CourseOutlineFragment.this,
+                    RC_STORAGE_PERMISSION_VIDEO
+            );
         }
     }
 
@@ -447,9 +504,35 @@ public class CourseOutlineFragment extends BaseFragment implements LastAccessMan
     }
 
     @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        super.onPermissionsDenied(requestCode, perms);
+        switch (requestCode) {
+            case RC_STORAGE_PERMISSION_COURSE:
+            case RC_STORAGE_PERMISSION_COMPONENT:
+            case RC_STORAGE_PERMISSION_VIDEO:
+                Toast.makeText(getContext(),
+                        R.string.download_permission_denied,
+                        Toast.LENGTH_SHORT
+                ).show();
+                onDownloadFailedToStart();
+                CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+                if (activity != null) {
+                    activity.onDownloadFailedToStart();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
+                Toast.makeText(getContext(),
+                        R.string.download_permission_denied,
+                        Toast.LENGTH_SHORT
+                ).show();
+                break;
             // If user has navigated to a different unit, then we need to rearrange
             // the activity stack to point to it.
             case REQUEST_SHOW_COURSE_UNIT_DETAIL: {
