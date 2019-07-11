@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath 'org.yaml:snakeyaml:1.14'
         //Included for NewRelic
-        classpath "com.newrelic.agent.android:agent-gradle-plugin:5.4.1"
+        classpath "com.newrelic.agent.android:agent-gradle-plugin:${NEW_RELIC_PLUGIN_VERSION}"
         classpath 'com.facebook.testing.screenshot:plugin:0.8.0'
     }
 }
@@ -159,10 +159,11 @@ dependencies {
     implementation 'com.github.vipulasri:timelineview:1.0.5'
     implementation 'uk.co.chrisjenx:calligraphy:2.1.0'
     // Branch SDK
-    /* To support versions prior to API level 15 we have to use v1.14.5 of Branch SDK
-         * https://dev.branch.io/getting-started/sdk-integration-guide/advanced/android/#supporting-pre-15-android
-         */
-    implementation 'io.branch.sdk.android:library:1.14.5'
+    // Check this link for guide to updating Branch integration:
+    // https://github.com/BranchMetrics/android-branch-deep-linking
+    implementation ('io.branch.sdk.android:library:2.19.2') {
+        exclude module: 'answers-shim'
+    }
     // Google Firebase
     implementation "com.google.firebase:firebase-core:16.0.9"
     // Segment Library
@@ -176,7 +177,7 @@ dependencies {
         transitive = true;
     }
     //New Relic Integration
-    implementation 'com.newrelic.agent.android:android-agent:5.4.1'
+    implementation "com.newrelic.agent.android:android-agent:${NEW_RELIC_PLUGIN_VERSION}"
     //Include DI framework
     implementation 'org.roboguice:roboguice:3.0.1'
     compileOnly 'org.roboguice:roboblender:3.0.1'

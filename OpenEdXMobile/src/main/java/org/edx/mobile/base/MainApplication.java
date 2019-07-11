@@ -96,11 +96,11 @@ public abstract class MainApplication extends MultiDexApplication {
             EventBus.getDefault().register(new NewRelicObserver());
         }
 
-        // initialize NewRelic with crash reporting disabled
+        // initialize NewRelic with crash reporting enabled
         if (config.getNewRelicConfig().isEnabled()) {
-            //Crash reporting for new relic has been disabled
+            //Crash reporting for new relic has been enabled
             NewRelic.withApplicationToken(config.getNewRelicConfig().getNewRelicKey())
-                    .withCrashReportingEnabled(false)
+                    .withCrashReportingEnabled(true)
                     .start(this);
         }
 
