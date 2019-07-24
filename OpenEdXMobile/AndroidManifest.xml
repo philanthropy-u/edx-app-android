@@ -31,6 +31,10 @@
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
 
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name="org.edx.mobile.view.SplashActivity"
             android:label="@string/app_shortcut_name"
